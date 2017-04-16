@@ -1,4 +1,4 @@
-function [ x_k ] = proj_sub_grad( x_k, grad_x_k, alpha_k, A, B, X, lambda, eta, var )
+function [ x_k , objs ] = proj_sub_grad( x_k, grad_x_k, alpha_k, A, B, X, lambda, eta, var )
 %Do a projected subgradient onto the positive cone
 %A and B are the fixed matrices and x_k is the matrix over which we
 %optimize, grad_x_k is the initial gradient with respect to x_k, lambda is
@@ -9,6 +9,7 @@ function [ x_k ] = proj_sub_grad( x_k, grad_x_k, alpha_k, A, B, X, lambda, eta, 
 max_iters = 300;
 eps = 0.0001;
 k = 1;
+objs = [];
 while norm(grad_x_k)>eps && k <= max_iters
     if var == 1
         [ grad_x_k,~,~ ] = sub_grads( x_k ,A ,B , X, lambda, eta );
@@ -24,16 +25,18 @@ while norm(grad_x_k)>eps && k <= max_iters
         x_k = x_k.*(x_k>0);
         k = k+1;
     end
-%     if var == 1
-%         norm(X - x_k*A*B,'fro')^2;
-%     elseif var == 2
+    if mod(k, 10) == 0
+        if var == 1
+             ll = norm(X - x_k*A*B,'fro')^2;
+        elseif var == 2
 %         nnz(x_k);
-%         norm(X-A*x_k*B,'fro')^2
-%     else
-%         norm(X-A*B*x_k,'fro')^2
-%     end
+             ll = norm(X-A*x_k*B,'fro')^2;
+        else
+             ll = norm(X-A*B*x_k,'fro')^2;
+        end
+    objs = [objs, ll];
+    end
+    
 end
-
-
 end
 
