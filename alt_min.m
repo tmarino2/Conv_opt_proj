@@ -3,7 +3,7 @@ Obj = [norm(X - W*Th*H,'fro')^2];
 ObjW = [norm(X - W*Th*H,'fro')^2];
 ObjTh = [norm(X - W*Th*H,'fro')^2];
 %have better stopping criterion
-max_iters = 50; %100;
+max_iters = 500; %100;
 [ grW,grTh,grH ] = sub_grads( W ,Th ,H , X, lambda, eta );  % this is just used to create some filler space
 ObjWLL = [];
 ObjThLL = [];
