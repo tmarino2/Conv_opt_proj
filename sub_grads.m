@@ -11,10 +11,13 @@ end
 size(W);
 size(Th);
 size(H);
-grW = 2*(W*Th*H - X)*(Th*H)' + eta*tilde_W;
+grW = 2*(W*Th*H - X)*(Th*H)'/size(H,2) + eta*tilde_W;
 zer = 0;
 % grTh = (2*W'*(W*Th*H - X)*H' + lambda*(eye(size(Th,1)).*Th>zer)).*eye(size(Th,1));
-grTh = (2*W'*(W*Th*H - X)*H' + lambda*(Th>0)).*eye(size(Th));
-grH = 2*(W*Th)'*(W*Th*H - X);
+grTh = (2*W'*(W*Th*H - X)*H'/size(H,2) + lambda*(Th>0)).*eye(size(Th));
+grH = 2*(W*Th)'*(W*Th*H - X)/size(H,2);
+% grW = grW/size(grH,2);
+% grTh = grTh/size(grH,2);
+% grH = grH/size(grH,2);
 end
 
