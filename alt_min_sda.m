@@ -7,13 +7,13 @@ ObjWLL = [];
 ObjThLL = [];
 ObjHLL = [];
 for i = 1:max_iters
-    [W, ll] = SDA(W, grW, Th, H, X, lambda, eta, 1, 200);
+    [W, ll] = SDA(W, grW, Th, H, X, lambda, eta, 1, 300);
     ObjWLL = [ObjWLL; ll];
-    [H, ll]= SDA( H, grH, W, Th, X, lambda, eta, 3, 200 );  
+    [H, ll]= SDA( H, grH, W, Th, X, lambda, eta, 3, 300 );  
     ObjHLL = [ObjHLL; ll];
-    [Th, ll] = SDA( Th, grTh, W, H, X, lambda, eta, 2, 200 );
+    [Th, ll] = SDA( Th, grTh, W, H, X, lambda, eta, 2, 300 );
     ObjThLL = [ObjThLL; ll];
-    Obj = [Obj, norm(X - W*Th*H,'fro')^2]
+    Obj = [Obj, norm(X - W*Th*H,'fro')^2/size(X,2)]
 end
 end
 
