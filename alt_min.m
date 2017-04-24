@@ -1,7 +1,7 @@
 function [ Obj, W, Th, H, ObjWLL, ObjThLL, ObjHLL] = alt_min( X, W, Th, H, alpha, lambda, eta, step_over_k, stop_early_gnorm )
 Obj = [norm(X - W*Th*H,'fro')^2];
 %have better stopping criterion
-max_iters = 5; %250;
+max_iters = 250;
 [ grW,grTh,grH ] = sub_grads( W ,Th ,H , X, lambda, eta );  % this is just used to create some filler space
 ObjWLL = [];
 ObjThLL = [];
@@ -12,7 +12,7 @@ if stop_early_gnorm == 1
 else
     eps = 0.0001;
 end
-num_inner_iters = 20; %200;
+num_inner_iters = 200;
 for i = 1:max_iters
     [W, ll] = proj_sub_grad( W, grW, alpha, Th, H, X, lambda, eta, 1, num_inner_iters, step_over_k, eps);
 %     ObjW = [ObjW, norm(X - W*Th*H,'fro')^2];

@@ -1,5 +1,3 @@
-% proj GD method
-
 function [] = expr_all()
 rows = 40;
 cols = 5000;
@@ -12,6 +10,8 @@ H = [];
 H = [];
 X = [];
 load('data1.mat');
+
+disp('starting experiments');
 
 
     function [Obj, ObjWLL, ObjThLL, ObjHLL] = run_pgd(alpha, lambda, eta, step_over_k, stop_early_gnorm)
@@ -29,7 +29,7 @@ Th0 = diag(Th0);
 
     end
 
-    function [Obj, ObjWLL, ObjTHLL, ObjHLL] = run_sda(lambda, eta)
+    function [Obj, ObjWLL, ObjThLL, ObjHLL] = run_sda(eta, lambda)
 
 % randomly create the inital points
 W0 = randn(rows,rows);
@@ -40,7 +40,7 @@ Th0 = randn(rows,1);
 Th0 = Th0.*(Th0 > 0) + .001;  % make nothing be zero exactly
 Th0 = diag(Th0);
 
-[ Obj, Ws, Ths, Hs, ObjWLL, ObjThLL, ObjHLL] = alt_min_sda( X, W0, Th0, H0, 1, 0.5 );
+[ Obj, Ws, Ths, Hs, ObjWLL, ObjThLL, ObjHLL] = alt_min_sda( X, W0, Th0, H0, lambda, eta );
     end
 
 
@@ -57,6 +57,7 @@ plot(1:size(stepPlots, 2), stepPlots);
 title('Project gradient, fixed step size');
 legend('.1', '.01', '.001', '.0001');
 print('pgd-fixed-step.png', '-dpng');
+save('pgd-stepPlotRes.mat', 'stepPlots');
 stepPlots = [];  % clear
 
 % step inner 1/k
@@ -64,6 +65,7 @@ stepPlots = [];  % clear
 plot(1:size(Obj), Obj);
 title('Projected gradient, 1/k step scaling');
 print('pgd-dec-step.png', '-dpng');
+save('pgd-decStep.mat', 'Obj');
 
 % different lambda
 lambdaPlots = [];
@@ -75,6 +77,7 @@ plot(1:size(lambdaPlots, 2), lambdaPlots);
 title('Project gradient, changing lambda');
 legend('.2', '.4', '.6', '.8', '1');
 print('pgd-lambda.png', '-dpng');
+save('pgd-lambda.mat', 'lambdaPlots');
 lambdaPlots = [];
 
 % different eta
@@ -87,17 +90,43 @@ plot(1:size(etaPlots, 2), etaPlots);
 title('Project gradient, changing eta');
 legend('.2', '.4', '.6', '.8', '1');
 print('pgd-eta.png', '-dpng');
+save('pgd-eta.mat', 'etaPlots');
 etaPlots = [];
 
 % stopping the inner loops using the norm of their gradients
 [Obj, ObjWLL, ObjThLL, ObjHLL] = run_pgd(.01, .5, .5, 0, 1);
 plot(1:size(Obj, 1), Obj);
 title('Early stopping with gradient norm');
+save('pgd-early-stop.mat', 'Obj');
 print('pgd-early-stop.png', '-dpng');
 
-
-
 % perofrm the experiments on the SDA
-   
+
+ % different lambda
+ lambdaPlots = [];
+for lambda = .2 * (1:5)
+    [Obj, ObjWLL, ObjThLL, ObjHLL] = run_sda(lambda, .01);
+    lambdaPlots = [lambdaPlots;Obj];
+end
+plot(1:size(lambdaPlots, 2), lambdaPlots);
+title('Simple dual average, changing lambda');
+legend('.2', '.4', '.6', '.8', '1');
+print('sda-lambda.png', '-dpng');
+save('sda-lambda.mat', 'lambdaPlots');
+lambdaPlots = [];
+
+ % different eta
+etaPlots = [];
+for eta = .1 * (1:5)
+    [Obj, ObjWLL, ObjThLL, ObjHLL] = run_sda(1, eta);
+    etaPlots = [etaPlots;Obj];
+end
+plot(1:size(etaPlots, 2), etaPlots);
+title('Simple dual average, changing eta');
+legend('.1', '.2', '.3', '.4', '.5');
+print('sda-eta.png', '-dpng');
+save('sda-eta.mat', 'etaPlots');
+etaPlots = [];
+
 
 end
