@@ -21,6 +21,7 @@ while norm(grad_x_k)>eps && k <= max_iters
         [ ~,~,grad_x_k ] = sub_grads( A ,B ,x_k , X, lambda, eta );
     end
     if norm(grad_x_k)<=eps
+        k = k + 1;  % since we are going to pad the objs, have the right count
         break
     else
         if step_over_k == 1

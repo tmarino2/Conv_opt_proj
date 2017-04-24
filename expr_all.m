@@ -1,4 +1,4 @@
-function [] = expr_all()
+function [] = expr_all(N)
 rows = 40;
 cols = 5000;
 W = [];
@@ -44,6 +44,7 @@ Th0 = diag(Th0);
     end
 
 
+if N == 1
 % perform the experiments on the Proj GD
  % changing the step size, fixed
  stepPlots = [];
@@ -59,14 +60,18 @@ legend('.1', '.01', '.001', '.0001');
 print('pgd-fixed-step.png', '-dpng');
 save('pgd-stepPlotRes.mat', 'stepPlots');
 stepPlots = [];  % clear
+end
 
+if N == 2
 % step inner 1/k
 [Obj, ObjWLL, ObjThLL, ObjHLL] = run_pgd(.01, .5, .5, 1, 0);
 plot(1:size(Obj), Obj);
 title('Projected gradient, 1/k step scaling');
 print('pgd-dec-step.png', '-dpng');
 save('pgd-decStep.mat', 'Obj');
+end
 
+if N == 3
 % different lambda
 lambdaPlots = [];
 for lambda = .2 * (1:5)
@@ -79,7 +84,9 @@ legend('.2', '.4', '.6', '.8', '1');
 print('pgd-lambda.png', '-dpng');
 save('pgd-lambda.mat', 'lambdaPlots');
 lambdaPlots = [];
+end
 
+if N == 4
 % different eta
 etaPlots = [];
 for eta = .2 * (1:5)
@@ -92,16 +99,20 @@ legend('.2', '.4', '.6', '.8', '1');
 print('pgd-eta.png', '-dpng');
 save('pgd-eta.mat', 'etaPlots');
 etaPlots = [];
+end
 
+if N == 5
 % stopping the inner loops using the norm of their gradients
 [Obj, ObjWLL, ObjThLL, ObjHLL] = run_pgd(.01, .5, .5, 0, 1);
 plot(1:size(Obj, 1), Obj);
 title('Early stopping with gradient norm');
 save('pgd-early-stop.mat', 'Obj');
 print('pgd-early-stop.png', '-dpng');
+end
 
 % perofrm the experiments on the SDA
 
+if N == 6
  % different lambda
  lambdaPlots = [];
 for lambda = .2 * (1:5)
@@ -114,7 +125,9 @@ legend('.2', '.4', '.6', '.8', '1');
 print('sda-lambda.png', '-dpng');
 save('sda-lambda.mat', 'lambdaPlots');
 lambdaPlots = [];
+end
 
+if N == 7
  % different eta
 etaPlots = [];
 for eta = .1 * (1:5)
@@ -127,6 +140,6 @@ legend('.1', '.2', '.3', '.4', '.5');
 print('sda-eta.png', '-dpng');
 save('sda-eta.mat', 'etaPlots');
 etaPlots = [];
-
+end
 
 end
