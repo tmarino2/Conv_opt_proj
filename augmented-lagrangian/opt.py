@@ -2,89 +2,89 @@ import numpy as np
 from numpy import zeros, zeros_like, maximum
 
 
-def func(X, W, theta, H):
+def func(X, W, theta, H, L):
     """ function evaluation """
     estim = W.dot(np.diag(theta)).dot(H)
-    return ((X - estim)**2).sum()
+    return ((X - estim)**2).sum() + L * np.abs(theta).sum()
 
 
-def fd_W(X, W, theta, H, eps=1.0):
+def fd_W(X, W, theta, H, L, eps=1.0):
     dW = zeros_like(W)
     for i in xrange(W.shape[0]):
         for j in xrange(W.shape[1]):
             W[i, j] += eps
-            val1 = func(X, W, theta, H)
+            val1 = func(X, W, theta, H, L)
             W[i, j] -= 2*eps
-            val2 = func(X, W, theta, H)
+            val2 = func(X, W, theta, H, L)
             W[i, j] += eps
             dW[i, j] = (val1-val2)/(2*eps)
     return dW
 
 
-def fd_H(X, W, theta, H, eps=1.0):
+def fd_H(X, W, theta, H, L, eps=1.0):
     dH = zeros_like(H)
     for i in xrange(H.shape[0]):
         for j in xrange(H.shape[1]):
             H[i, j] += eps
-            val1 = func(X, W, theta, H)
+            val1 = func(X, W, theta, H, L)
             H[i, j] -= 2*eps
-            val2 = func(X, W, theta, H)
+            val2 = func(X, W, theta, H, L)
             H[i, j] += eps
             dH[i, j] = (val1-val2)/(2*eps)
     return dH
 
 
-def fd_theta(X, W, theta, H, eps=1.0):
+def fd_theta(X, W, theta, H, L, eps=1.0):
     dtheta = zeros_like(theta)
     for i in xrange(theta.shape[0]):
         theta[i] += eps
-        val1 = func(X, W, theta, H)
+        val1 = func(X, W, theta, H, L)
         theta[i] -= 2*eps
-        val2 = func(X, W, theta, H)
+        val2 = func(X, W, theta, H, L)
         theta[i] += eps
         dtheta[i] = (val1-val2)/(2*eps)
-    return dtheta
+    return dtheta 
 
 
-def fd_H(X, W, theta, H, eps=1.0):
+def fd_H(X, W, theta, H, L, eps=1.0):
     dH = zeros_like(H)
     for i in xrange(H.shape[0]):
         for j in xrange(H.shape[1]):
             H[i, j] += eps
-            val1 = func(X, W, theta, H)
+            val1 = func(X, W, theta, H, L)
             H[i, j] -= 2*eps
-            val2 = func(X, W, theta, H)
+            val2 = func(X, W, theta, H, L)
             H[i, j] += eps
             dH[i, j] = (val1-val2)/(2*eps)
     return dH
 
 
-def fd(eps=0.0001):
+def fd(L, eps=0.0001):
     n, m, r = 10, 20, 2
     for _ in xrange(20):
         X = maximum(np.random.randn(n, m), 0)
         W = maximum(np.random.randn(n, r), 0)
         H = maximum(np.random.randn(r, m), 0)
         theta = maximum(np.random.randn(r), 0)
-        assert np.allclose(fd_W(X, W, theta, H, eps=eps), grad_W(X, W, theta, H), atol=0.001)
-        assert np.allclose(fd_H(X, W, theta, H, eps=eps), grad_H(X, W, theta, H), atol=0.001)
-        assert np.allclose(fd_theta(X, W, theta, H, eps=eps), grad_theta(X, W, theta, H), atol=0.001)
+        assert np.allclose(fd_W(X, W, theta, H, L, eps=eps), grad_W(X, W, theta, H, L), atol=0.001)
+        assert np.allclose(fd_H(X, W, theta, H, L, eps=eps), grad_H(X, W, theta, H, L), atol=0.001)
+        assert np.allclose(fd_theta(X, W, theta, H, L, eps=eps), grad_theta(X, W, theta, H, L), atol=0.001)
 
         
-def grad_W(X, W, theta, H):
+def grad_W(X, W, theta, H, L):
     estim = W.dot(np.diag(theta)).dot(H)
     return -2*(X - estim).dot((np.diag(theta).dot(H)).T)
 
 
-def grad_H(X, W, theta, H):
+def grad_H(X, W, theta, H, L):
     estim = W.dot(np.diag(theta)).dot(H)
     return ((W.dot(np.diag(theta))).T).dot(-2*(X - estim))
 
 
-def grad_theta(X, W, theta, H):
+def grad_theta(X, W, theta, H, L):
     estim = W.dot(np.diag(theta)).dot(H)
     tmp = -2*(X - estim)
-    return np.diag(np.dot(np.dot(W.T, tmp), H.T))
+    return np.diag(np.dot(np.dot(W.T, tmp), H.T)) + L * np.sign(theta)
 
     
 def opt(X, n, m, r, iters=200):
@@ -127,7 +127,8 @@ if __name__ == "__main__":
     theta = maximum(np.random.randn(r), 0)
 
 
-    #fd()
+    L = 0.1
+    fd(L)
 
 
-    opt(X, n, m, r)
+    #opt(X, n, m, r)
