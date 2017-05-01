@@ -28,11 +28,14 @@ while norm(grad_x_k)>eps && k <= max_iters
     end
     if mod(k, 10) == 0
         if var == 1
-             ll = norm(X - x_k_hat*A*B,'fro')^2;
+%              ll = norm(X - x_k_hat*A*B,'fro')^2;
+             ll = compute_f(X,x_k_hat,A,B,lambda,eta);
         elseif var == 2
-             ll = norm(X-A*x_k_hat*B,'fro')^2;
+%              ll = norm(X-A*x_k_hat*B,'fro')^2;
+             ll = compute_f(X,A,x_k_hat,B,lambda,eta);
         else
-             ll = norm(X-A*B*x_k_hat,'fro')^2;
+%              ll = norm(X-A*B*x_k_hat,'fro')^2;
+            ll = compute_f(X,A,B,x_k_hat,lambda,eta);
         end
     objs = [objs, ll];
     end

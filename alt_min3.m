@@ -1,4 +1,4 @@
-function [Norm_diff Obj, W, Th, H, ObjWLL, ObjThLL, ObjHLL] = alt_min3( X, W, Th, H, alpha, lambda, eta )
+function [Norm_diff, Obj, W, Th, H, ObjWLL, ObjThLL, ObjHLL] = alt_min3( X, W, Th, H, alpha, lambda, eta )
 % Obj = [norm(X - W*Th*H,'fro')^2/size(X,2)];
 Obj = [compute_f(X,W,Th,H,lambda,eta)];
 %have better stopping criterion
