@@ -121,7 +121,7 @@ def opt(X, n, m, r, iters=200):
             dtheta = grad_theta(X, W, theta, H)
             theta -= eta * dtheta
             # projection into the non-negative orthant
-            theta = np.maximum(theta, 0)
+            # theta = np.maximum(theta, 0)
             
         print func(X, W, theta, H)
 
