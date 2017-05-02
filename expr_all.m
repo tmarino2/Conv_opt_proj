@@ -1,4 +1,7 @@
 function [] = expr_all(N)
+% THIS IS NOT USED ANYMORE
+% RUN ALL THE EXPR WITH THE QSUB SCRIPTS ETC
+
 rows = 40;
 cols = 5000;
 W = [];

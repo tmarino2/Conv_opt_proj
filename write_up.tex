@@ -311,9 +311,32 @@ To show the objective in~\ref{problem_7} is strongly convex we are going to show
 \end{proof}
 Theorem 1.8 in lecture slides 4 now characterizes the linear convergence rate to a local neighbourhood of the solution. To address our choice of stopping criteria, from Theorem 1.8 we know that  $d(\Theta_{k+1},\Theta^*)^2 < \alpha\frac{\kappa_g^2}{\gamma} + c^kd(\Theta_0,\Theta^*)^2$, where $\Theta^*$ is the optimal solution to~\ref{problem_7}, $c<1$ depends on $\alpha$ and $\gamma$ and $\kappa_g$ is a bound on the norm of the elements in the sub-differential of the objective. For $k$ large enough this implies that all of the $\Theta_{k}$'s are going to be contained in an open ball of fixed radius which is approximately $c^kd(\Theta_0,\Theta^*)^2$ -- this implies that the distance between any two consecutive iterates $d(\Theta_k,\Theta_{k+1})^2$ is also going to be less than $\alpha\frac{\kappa_g^2}{\gamma}$. Since the convergence theory does not guarantee anything more stopping our algorithm when $d(\Theta_k,\Theta_{k+1})^2$ becomes small enough seems acceptable. To be absolutely fair $d(\Theta_k,\Theta_{k+1})^2$ being small is only a necessary condition for convergence but not sufficient -- it might happen that two consecutive iterates are close to each other, however, they are still not close to the optimal $\Theta^*$. To alleviate this problem one might check that all the pair-wise distances between $\Theta_k,\Theta_{k+1},...,\Theta_{k+\tau}$ are small.
 
+\subsubsection{Fixed step size experiment results}
+\red{TODO: clean up}
+
+\begin{figure}
+  \includegraphics{fixed-step-alpha.png}
+\end{figure}
+
+\begin{figure}
+  \includegraphics{fixed-step-lambda.png}
+\end{figure}
+
+\begin{figure}
+  \includegraphics{fixed-step-eta.png}
+\end{figure}
+
+
+
+
 \subsection{Decreasing step size}
 None of the convergence results in lecture slides 6 hold any longer for projected subgradient descent with decreasing step size. However, we can still characterize the convergence in terms of objective and iterates for step size decreasing as $\frac{1}{t}$. From Theorem 1.11 in lecture slides 4 we know that the iterates for projected gradient descent for problems~\ref{problem_6},\ref{problem_7} and \ref{problem_8} will converge to an optimal point (given such exists). For~\ref{problem_6} and~\ref{problem_8} we can use Lemma 1.3 in lecture slides 6 to show that this would imply convergence in objective. From Lemma 1.3 in lecture slides 6 we know that if $f$ has an L-Lipschitz continuous gradient we have $f(x_k) - f(x^*) \leq \langle\nabla f(x^*)(x_k-x^*)\rangle + \frac{L}{2}\norm{x_k-x^*}^2$. Using Cauchy-Schwartz inequality we have $\langle\nabla f(x^*)(x_k-x^*)\rangle \leq \norm{\nabla f(x^*)}\norm{x_k-x^*}$ thus $f(x_k) - f(x^*) \leq \norm{x_k-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right)$ and since $\norm{\nabla f(x^*)}$ is bounded this shows convergence in objective. By triangle inequality we have $\norm{x_k-x^*} \leq \norm{x_k-x_{k+1}} + \norm{x_{k+1} - x^*}$ and thus $f(x_k) - f(x^*) \leq \norm{x_k-x_{k+1}}(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}) + \norm{x_{k+1}-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right) \leq \norm{x_k-x_{k+1}}c_1 + \tilde{\epsilon}$ where $c_1 = \norm{\nabla f(x^*)}  + \frac{L}{2}\norm{x_k-x^*}$ and $\tilde{\epsilon} = \norm{x_{k+1}-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right)$. Clearly for $k$ large enough $\tilde{\epsilon}$ is as small as we would like and $c_1$ is bounded thus for $k$ large enough $\norm{x_{k+1} - x_k} < \epsilon$ implies $f(x_k) - f(x^*)$ is small. This should somewhat justify our stopping criteria for~\ref{problem_6} and~\ref{problem_8}. None of the above derivations, however, hold for~\ref{problem_7} in fact the only thing we can argue is that the iterates $\Theta_k$ are going to converge to $\Theta^*$. This is quite disappointing compared to the results we were able to obtain for a constant step size. In practice as we can see from the experiments we still get satisfactory results.
 TODO:Include experiments and comment in same way as in previous section
+
+\subsubsection{Decreasing step size experiment results}
+
+
+
 \section{Simple Dual Averaging}
 \section{Augmented Lagrangian}
 \bibliographystyle{plain}

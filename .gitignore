@@ -1,0 +1,12 @@
+step_*
+deck_*
+sda_*
+
+write_up.aux
+write_up.bbl
+write_up.blg
+write_up.fdb_latexmk
+write_up.fls
+write_up.log
+write_up.out
+
