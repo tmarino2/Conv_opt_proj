@@ -4,7 +4,10 @@ from numpy import zeros, zeros_like, maximum
 
 def func(X, W, theta, H, L, Mu_W,  Mu_theta, Mu_H):
     estim = W.dot(np.diag(theta)).dot(H)
-    return ((X - estim)**2).sum() + L * np.abs(theta).sum()
+    return ((X - estim)**2).sum() + L * np.abs(theta).sum() \
+        + ((Mu_W/2.0) * np.maximum(W, 0)**2).sum() \
+        + ((Mu_H/2.0) * np.maximum(H, 0)**2).sum() \
+        + ((Mu_theta/2.0) * np.maximum(theta, 0)**2).sum() 
 
 
 def fd_W(X, W, theta, H, L, Mu_W,  Mu_theta, Mu_H, eps=1.0):
@@ -78,18 +81,22 @@ def fd(L, eps=0.0001):
         
 def grad_W(X, W, theta, H, L, Mu_W,  Mu_theta, Mu_H):
     estim = W.dot(np.diag(theta)).dot(H)
-    return -2*(X - estim).dot((np.diag(theta).dot(H)).T)
+    return -2*(X - estim).dot((np.diag(theta).dot(H)).T) \
+        + Mu_W * np.maximum(W, 0)
+
 
 
 def grad_H(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H):
     estim = W.dot(np.diag(theta)).dot(H)
-    return ((W.dot(np.diag(theta))).T).dot(-2*(X - estim))
+    return ((W.dot(np.diag(theta))).T).dot(-2*(X - estim)) \
+        + Mu_H * np.maximum(H, 0)
 
 
 def grad_theta(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H):
     estim = W.dot(np.diag(theta)).dot(H)
     tmp = -2*(X - estim)
-    return np.diag(np.dot(np.dot(W.T, tmp), H.T)) + L * np.sign(theta)
+    return np.diag(np.dot(np.dot(W.T, tmp), H.T)) + L * np.sign(theta) \
+        + Mu_theta * np.maximum(theta, 0)
 
     
 def opt(X, n, m, r, iters=200):
