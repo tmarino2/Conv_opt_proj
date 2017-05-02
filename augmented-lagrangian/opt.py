@@ -1,5 +1,5 @@
 import numpy as np
-from numpy import zeros, zeros_like, maximum
+from numpy import zeros, ones, zeros_like, ones_like, maximum
 
 
 def func(X, W, theta, H, L, Mu_W,  Mu_theta, Mu_H):
@@ -106,26 +106,28 @@ def opt(X, n, m, r, iters=200):
     H = maximum(np.random.randn(r, m), 0)
     theta = maximum(np.random.randn(r), 0)
 
+    Mu_W = ones_like(W)
+    Mu_H = ones_like(H)
+    Mu_theta = ones_like(theta)
+    
     eta = 0.001
     
     for i in xrange(iters):
 
-
         for j in xrange(100):
-            dW = grad_W(X, W, theta, H)
+            dW = grad_W(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H)
             W -= eta * dW
         for j in xrange(100):
-            dH = grad_H(X, W, theta, H)
+            dH = grad_H(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H)
             H -= eta * dH
         for j in xrange(100):
-            dtheta = grad_theta(X, W, theta, H)
+            dtheta = grad_theta(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H)
             theta -= eta * dtheta
             # projection into the non-negative orthant
             # theta = np.maximum(theta, 0)
-            
-        print func(X, W, theta, H)
 
-            #dH = grad_H(X, W, theta, H)
+        print func(X, W, theta, H, L, Mu_W,  Mu_theta, Mu_H)
+        #dH = grad_H(X, W, theta, H)
         #    dtheta = grad_theta(X, W, theta, H)
 
 
@@ -140,7 +142,6 @@ if __name__ == "__main__":
 
 
     L = 0.1
-    fd(L)
+    #fd(L)
 
-
-    #opt(X, n, m, r)
+    opt(X, n, m, r)
