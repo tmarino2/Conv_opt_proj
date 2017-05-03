@@ -1,5 +1,6 @@
 import numpy as np
 from numpy import zeros, ones, zeros_like, ones_like, maximum, nan_to_num
+import scipy.io as sio
 
 
 def func(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H):
@@ -129,7 +130,7 @@ def opt(X, n, m, r, iters=2000, fudge=0.01):
     rho_theta = ones_like(Mu_theta)
 
     
-    eta = 0.0001
+    eta = 0.000005
     
     for k in xrange(iters):
 
@@ -183,10 +184,14 @@ def opt(X, n, m, r, iters=2000, fudge=0.01):
         print "theta:", theta.min(), theta.max()
 
 if __name__ == "__main__":
+    import sys
+    
+    M = sio.loadmat(sys.argv[1])
+    X = M['X']
+    n, m, r = X.shape[0], X.shape[1], 20
 
-    n, m, r = 10, 20, 10
-
-    X = maximum(np.random.randn(n, m), 0)
+    #n, m, r = 10, 20, 10
+    #X = maximum(np.random.randn(n, m), 0)
     W = maximum(np.random.randn(n, r), 0)
     H = maximum(np.random.randn(r, m), 0)
     theta = maximum(np.random.randn(r), 0)
