@@ -7,7 +7,7 @@ x_0 = x_k;
 x_k_hat = x_k;
 s_k = grad_x_k;
 betas = [1,1];
-while norm(grad_x_k)>eps && k <= max_iters
+while k <= max_iters
     if var == 1
         [ grad_x_k,~,~ ] = sub_grads( x_k ,A ,B , X, lambda, eta );
     elseif var == 2
