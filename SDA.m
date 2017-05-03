@@ -37,7 +37,10 @@ while k <= max_iters
 %              ll = norm(X-A*B*x_k_hat,'fro')^2;
             ll = compute_f(X,A,B,x_k_hat,lambda,eta);
         end
-    objs = [objs, ll];
+        objs = [objs, ll];
+        if length(objs) > 2 && abs(objs(end - 1) - objs(end)) < .0001
+            break
+        end
     end
     
 end
