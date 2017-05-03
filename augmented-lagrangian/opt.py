@@ -5,7 +5,7 @@ import scipy.io as sio
 
 def func(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H):
     estim = W.dot(np.diag(theta)).dot(H)
-    return ((X - estim)**2).sum() + L * np.abs(theta).sum() \
+    return 1.0/X.shape[1] * ((X - estim)**2).sum() + L * np.abs(theta).sum() \
         + 1.0/2.0 * (np.maximum(-W + Mu_W/rho_W, 0)**2).sum() \
         + 1.0/2.0 * (np.maximum(-H + Mu_H/rho_H, 0)**2).sum() \
         + 1.0/2.0 * (np.maximum(-theta + Mu_theta/rho_theta, 0)**2).sum() 
@@ -13,7 +13,7 @@ def func(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H):
 
 def func_orig(X, W, theta, H):
     estim = W.dot(np.diag(theta)).dot(H)
-    return ((X - estim)**2).sum() + L * np.abs(theta).sum()
+    return 1.0/X.shape[1] *  ((X - estim)**2).sum() + L * np.abs(theta).sum()
 
 
 def fd_W(X, W, theta, H, L, Mu_W,  Mu_theta, Mu_H, rho_W, rho_theta, rho_H, eps=1.0):
@@ -116,7 +116,7 @@ def opt(X, n, m, r, iters=2000, fudge=0.01):
     H = maximum(np.random.randn(r, m), 0)
     theta = maximum(np.random.randn(r), 0)
 
-    mu_max = 1000.
+    mu_max = 100.
     
     Mu_W = maximum(np.random.randn(n, r), 0) + fudge
     Mu_H = maximum(np.random.randn(r, m), 0) + fudge
@@ -128,30 +128,34 @@ def opt(X, n, m, r, iters=2000, fudge=0.01):
     rho_W = ones_like(Mu_W)
     rho_H = ones_like(Mu_H)
     rho_theta = ones_like(Mu_theta)
-
     
-    eta = 0.000005
+    eta_theta = 0.0000001
+    eta_W = 0.00005
+    eta_H = 0.00005
     
     for k in xrange(iters):
 
         # STEP 1
         for j in xrange(200):
             dW = grad_W(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
-            W -= eta * dW
+            W -= eta_W * dW
+            W = np.maximum(W, 0)
+            
         for j in xrange(200):
             dH = grad_H(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
-            H -= eta * dH
+            H -= eta_H * dH
+            H = np.maximum(H, 0)
             
         for j in xrange(200):
             dtheta = grad_theta(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
-            theta -= eta * dtheta
+            theta -= eta_theta * dtheta
             # projection into the non-negative orthant
             # this is sort of a hack, but it keeps it stable
-            #theta = np.maximum(theta, 0)
+            theta = np.maximum(theta, 0)
 
         print func(X, W, theta, H, L, Mu_W,  Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
         print func_orig(X, W, theta, H)
-
+        continue
         # STEP 2
         Mu_W += rho_W * np.maximum(0, -W)
         Mu_H += rho_H * np.maximum(0, -H)
@@ -188,7 +192,8 @@ if __name__ == "__main__":
     
     M = sio.loadmat(sys.argv[1])
     X = M['X']
-    n, m, r = X.shape[0], X.shape[1], 20
+    n, m, r = X.shape[0], X.shape[1], 30
+
 
     #n, m, r = 10, 20, 10
     #X = maximum(np.random.randn(n, m), 0)
@@ -196,7 +201,7 @@ if __name__ == "__main__":
     H = maximum(np.random.randn(r, m), 0)
     theta = maximum(np.random.randn(r), 0)
 
-    L = 0.1
+    L = 0.001
     #fd(L)
 
     opt(X, n, m, r)
