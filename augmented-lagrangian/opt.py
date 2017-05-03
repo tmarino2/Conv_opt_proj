@@ -120,22 +120,10 @@ def opt(X, n, m, r, L, iters=2000, fudge=0.01):
     Mu_W = maximum(np.random.randn(n, r), 0) + fudge
     Mu_H = maximum(np.random.randn(r, m), 0) + fudge
     Mu_theta = maximum(np.random.randn(r), 0) + fudge
-
-    Mu_W = zeros_like(Mu_W)
-    Mu_H = zeros_like(Mu_H)
-    Mu_theta = zeros_like(Mu_theta)
-
     
-    # rho_W = maximum(np.random.randn(n, r), 0) + fudge
-    # rho_H = maximum(np.random.randn(r, m), 0) + fudge
-    # rho_theta = maximum(np.random.randn(r), 0) + fudge
     rho_W = ones_like(Mu_W)
     rho_H = ones_like(Mu_H)
     rho_theta = ones_like(Mu_theta)
-    
-    eta_theta = 0.00001
-    eta_W = 0.0005
-    eta_H = 0.0005
     
     for k in xrange(iters):
 
@@ -184,34 +172,8 @@ def opt(X, n, m, r, L, iters=2000, fudge=0.01):
         
         opt, _, _ = lbfgs(f, params, fprime=g, disp=0, maxiter=100)
         theta = opt.reshape(theta.shape)
-        #theta = np.maximum(0, theta)
 
-
-        #print func(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
-        #continue
-    
-        
-        # # STEP 1
-        # for j in xrange(100):
-        #     dW = grad_W(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
-        #     W -= eta_W * dW
-        #     #W = np.maximum(W, 0)
-            
-        # for j in xrange(100):
-        #     dH = grad_H(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
-        #     H -= eta_H * dH
-        #     #H = np.maximum(H, 0)
-            
-        # for j in xrange(100):
-        #     dtheta = grad_theta(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
-        #     theta -= eta_theta * dtheta
-        #     # projection into the non-negative orthant
-        #     # this is sort of a hack, but it keeps it stable
-        #     #theta = np.maximum(theta, 0)
-
-        print func(X, W, theta, H, L, Mu_W,  Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
-        print func_orig(X, W, theta, H)
-        # continue
+        print "objective: {0}".format(func_orig(X, W, theta, H))
     
         # STEP 2
         Mu_W += rho_W * np.maximum(0, -W)
@@ -236,13 +198,13 @@ def opt(X, n, m, r, L, iters=2000, fudge=0.01):
         # STEP 5
         # increment
         
-        print "Mu_W", Mu_W.min(), Mu_W.max()
-        print "Mu_H", Mu_H.min(), Mu_H.max()
-        print "Mu_theta", Mu_theta.min(), Mu_theta.max()
+        # print "Mu_W", Mu_W.min(), Mu_W.max()
+        # print "Mu_H", Mu_H.min(), Mu_H.max()
+        # print "Mu_theta", Mu_theta.min(), Mu_theta.max()
 
-        print "W:", W.min(), W.max()
-        print "H:", H.min(), H.max()
-        print "theta:", theta.min(), theta.max()
+        # print "W:", W.min(), W.max()
+        # print "H:", H.min(), H.max()
+        # print "theta:", theta.min(), theta.max()
 
 if __name__ == "__main__":
     import sys
