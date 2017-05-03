@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import zeros, ones, zeros_like, ones_like, maximum, nan_to_num
 import scipy.io as sio
-
+from scipy.optimize import fmin_l_bfgs_b as lbfgs
 
 def func(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H):
     estim = W.dot(np.diag(theta)).dot(H)
@@ -13,7 +13,7 @@ def func(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H):
 
 def func_orig(X, W, theta, H):
     estim = W.dot(np.diag(theta)).dot(H)
-    return 1.0/X.shape[1] *  ((X - estim)**2).sum() + L * np.abs(theta).sum()
+    return 1.0/X.shape[1] *  ((X - estim)**2).sum() + L * np.abs(theta).sum() + L * np.abs(theta).sum()
 
 
 def fd_W(X, W, theta, H, L, Mu_W,  Mu_theta, Mu_H, rho_W, rho_theta, rho_H, eps=1.0):
@@ -68,7 +68,7 @@ def fd_H(X, W, theta, H, L, Mu_W,  Mu_theta, Mu_H, rho_W, rho_theta, rho_H, eps=
 
 
 def fd(L, eps=0.0001):
-    n, m, r = 10, 20, 2
+    n, m, r = 10, 20, 5
     for _ in xrange(20):
         X = maximum(np.random.randn(n, m), 0)
         
@@ -84,7 +84,7 @@ def fd(L, eps=0.0001):
         rho_W = maximum(np.random.randn(n, r), 0) + fudge
         rho_H = maximum(np.random.randn(r, m), 0) + fudge
         rho_theta = maximum(np.random.randn(r), 0) + fudge
-        
+
         assert np.allclose(fd_W(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H, eps=eps), grad_W(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H), atol=0.001)
         assert np.allclose(fd_H(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H, eps=eps), grad_H(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H), atol=0.001)
         assert np.allclose(fd_theta(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H, eps=eps), grad_theta(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H), atol=0.001)
@@ -92,24 +92,23 @@ def fd(L, eps=0.0001):
         
 def grad_W(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H):
     estim = W.dot(np.diag(theta)).dot(H)
-    return nan_to_num(-2*(X - estim).dot((np.diag(theta).dot(H)).T) \
-        - np.maximum(-W + Mu_W/rho_W, 0))
+    return -2.0/X.shape[1] *(X - estim).dot((np.diag(theta).dot(H)).T) \
+                    - np.maximum(-W + Mu_W/rho_W, 0)
 
 
 def grad_H(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H):
     estim = W.dot(np.diag(theta)).dot(H)
-    return nan_to_num(((W.dot(np.diag(theta))).T).dot(-2*(X - estim)) \
-        - np.maximum(-H + Mu_H/rho_H, 0))
-
+    return 1.0/X.shape[1] * ((W.dot(np.diag(theta))).T).dot(-2*(X - estim)) \
+                      - np.maximum(-H + Mu_H/rho_H, 0)
 
 def grad_theta(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H):
     estim = W.dot(np.diag(theta)).dot(H)
     tmp = -2*(X - estim)
-    return nan_to_num(np.diag(np.dot(np.dot(W.T, tmp), H.T)) + L * np.sign(theta) \
-        - np.maximum(-theta + Mu_theta/rho_theta, 0))
+    return 1.0/X.shape[1] * np.diag(np.dot(np.dot(W.T, tmp), H.T)) + L * np.sign(theta) \
+        - np.maximum(-theta + Mu_theta/rho_theta, 0)
 
     
-def opt(X, n, m, r, iters=2000, fudge=0.01):
+def opt(X, n, m, r, L, iters=2000, fudge=0.01):
 
     X = maximum(np.random.randn(n, m), 0)
     W = maximum(np.random.randn(n, r), 0)
@@ -122,6 +121,11 @@ def opt(X, n, m, r, iters=2000, fudge=0.01):
     Mu_H = maximum(np.random.randn(r, m), 0) + fudge
     Mu_theta = maximum(np.random.randn(r), 0) + fudge
 
+    Mu_W = zeros_like(Mu_W)
+    Mu_H = zeros_like(Mu_H)
+    Mu_theta = zeros_like(Mu_theta)
+
+    
     # rho_W = maximum(np.random.randn(n, r), 0) + fudge
     # rho_H = maximum(np.random.randn(r, m), 0) + fudge
     # rho_theta = maximum(np.random.randn(r), 0) + fudge
@@ -129,33 +133,86 @@ def opt(X, n, m, r, iters=2000, fudge=0.01):
     rho_H = ones_like(Mu_H)
     rho_theta = ones_like(Mu_theta)
     
-    eta_theta = 0.0000001
-    eta_W = 0.00005
-    eta_H = 0.00005
+    eta_theta = 0.00001
+    eta_W = 0.0005
+    eta_H = 0.0005
     
     for k in xrange(iters):
 
         # STEP 1
-        for j in xrange(200):
-            dW = grad_W(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
-            W -= eta_W * dW
-            W = np.maximum(W, 0)
+        
+        # iterate on W
+        params = W.reshape(-1)
+        def f(params):
+            W_new = np.resize(params, W.shape)
+            np.resize(params, W.shape)
+            return func(X, W_new, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
             
-        for j in xrange(200):
-            dH = grad_H(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
-            H -= eta_H * dH
-            H = np.maximum(H, 0)
+        def g(params):
+            W_new = np.resize(params, W.shape)
+            return np.resize(grad_W(X, W_new, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H), params.shape)
+
+        opt, _, _ = lbfgs(f, params, fprime=g, disp=0, maxiter=100)
+        W = opt.reshape(W.shape)
+        #W = np.maximum(0, W)
+        
+        # iterate on H
+        params = H.reshape(-1)
+        def f(params):
+            H_new = np.resize(params, H.shape)
+            np.resize(params, H.shape)
+            return func(X, W, theta, H_new, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
             
-        for j in xrange(200):
-            dtheta = grad_theta(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
-            theta -= eta_theta * dtheta
-            # projection into the non-negative orthant
-            # this is sort of a hack, but it keeps it stable
-            theta = np.maximum(theta, 0)
+        def g(params):
+            H_new = np.resize(params, H.shape)
+            return np.resize(grad_H(X, W, theta, H_new, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H), params.shape)
+
+        opt, _, _ = lbfgs(f, params, fprime=g, disp=0, maxiter=100)
+        H = opt.reshape(H.shape)
+        #H = np.maximum(0, H)
+        
+        # iterate on theta
+        params = theta.reshape(-1)
+        def f(params):
+            theta_new = np.resize(params, theta.shape)
+            np.resize(params, theta.shape)
+            return func(X, W, theta_new, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
+            
+        def g(params):
+            theta_new = np.resize(params, theta.shape)
+            return np.resize(grad_theta(X, W, theta_new, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H), params.shape)
+        
+        opt, _, _ = lbfgs(f, params, fprime=g, disp=0, maxiter=100)
+        theta = opt.reshape(theta.shape)
+        #theta = np.maximum(0, theta)
+
+
+        #print func(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
+        #continue
+    
+        
+        # # STEP 1
+        # for j in xrange(100):
+        #     dW = grad_W(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
+        #     W -= eta_W * dW
+        #     #W = np.maximum(W, 0)
+            
+        # for j in xrange(100):
+        #     dH = grad_H(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
+        #     H -= eta_H * dH
+        #     #H = np.maximum(H, 0)
+            
+        # for j in xrange(100):
+        #     dtheta = grad_theta(X, W, theta, H, L, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
+        #     theta -= eta_theta * dtheta
+        #     # projection into the non-negative orthant
+        #     # this is sort of a hack, but it keeps it stable
+        #     #theta = np.maximum(theta, 0)
 
         print func(X, W, theta, H, L, Mu_W,  Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
         print func_orig(X, W, theta, H)
-        continue
+        # continue
+    
         # STEP 2
         Mu_W += rho_W * np.maximum(0, -W)
         Mu_H += rho_H * np.maximum(0, -H)
@@ -192,16 +249,21 @@ if __name__ == "__main__":
     
     M = sio.loadmat(sys.argv[1])
     X = M['X']
-    n, m, r = X.shape[0], X.shape[1], 30
-
+    n, m, r = X.shape[0], X.shape[1], 40
 
     #n, m, r = 10, 20, 10
-    #X = maximum(np.random.randn(n, m), 0)
+    X = maximum(np.random.randn(n, m), 0)
     W = maximum(np.random.randn(n, r), 0)
     H = maximum(np.random.randn(r, m), 0)
     theta = maximum(np.random.randn(r), 0)
 
+
+    #print W.shape
+    #print theta.shape
+
+    #exit(0)
+
     L = 0.001
     #fd(L)
-
-    opt(X, n, m, r)
+    #exit(0)
+    opt(X, n, m, r, L)
