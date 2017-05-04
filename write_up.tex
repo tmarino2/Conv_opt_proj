@@ -311,6 +311,19 @@ To show the objective in~\ref{problem_7} is strongly convex we are going to show
 \end{proof}
 Theorem 1.8 in lecture slides 4 now characterizes the linear convergence rate to a local neighbourhood of the solution. To address our choice of stopping criteria, from Theorem 1.8 we know that  $d(\Theta_{k+1},\Theta^*)^2 < \alpha\frac{\kappa_g^2}{\gamma} + c^kd(\Theta_0,\Theta^*)^2$, where $\Theta^*$ is the optimal solution to~\ref{problem_7}, $c<1$ depends on $\alpha$ and $\gamma$ and $\kappa_g$ is a bound on the norm of the elements in the sub-differential of the objective. For $k$ large enough this implies that all of the $\Theta_{k}$'s are going to be contained in an open ball of fixed radius which is approximately $c^kd(\Theta_0,\Theta^*)^2$ -- this implies that the distance between any two consecutive iterates $d(\Theta_k,\Theta_{k+1})^2$ is also going to be less than $\alpha\frac{\kappa_g^2}{\gamma}$. Since the convergence theory does not guarantee anything more stopping our algorithm when $d(\Theta_k,\Theta_{k+1})^2$ becomes small enough seems acceptable. To be absolutely fair $d(\Theta_k,\Theta_{k+1})^2$ being small is only a necessary condition for convergence but not sufficient -- it might happen that two consecutive iterates are close to each other, however, they are still not close to the optimal $\Theta^*$. To alleviate this problem one might check that all the pair-wise distances between $\Theta_k,\Theta_{k+1},...,\Theta_{k+\tau}$ are small.
 
+\section{Augmented Lagrangian}
+
+The final method we consider is augmented Lagrangian. First, we take the Lagrangian
+of our objective
+\begin{equation}
+  {\cal L}\left(W, \Theta, H) = ||X - W\Theta H||_F^2 + \lambda ||\Theta||_1 - \sum_{i=1}^m \sum_{j=1}^m \mu_{ij} W_{ij} - \sum_{i=1}^m \sum_{j=1}^n \nu_{ij} H_{ij} - \sum_{i=1}^n \xi \Theta_{ii}.
+\end{equation}
+
+The augmented Lagrangian, in contrast, considers the following objective
+\begin{equation}
+  {\cal L}\left(W, \Theta, H) = ||X - W\Theta H||_F^2 + \lambda ||\Theta||_1 - \sum_{i=1}^m \sum_{j=1}^m \max(0, -W_{ij} + \frac{\mu_{ij}}{\rho})^2  - \sum_{i=1}^m \sum_{j=1}^n \nu_{ij} H_{ij} - \sum_{i=1}^n \xi \Theta_{ii}.
+\end{equation}
+
 \subsubsection{Fixed step size experiment results}
 \red{TODO: clean up}
 
@@ -339,7 +352,7 @@ Theorem 1.8 in lecture slides 4 now characterizes the linear convergence rate to
   \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $H$}
 \end{figure}
 
-\begin{figure}
+k\begin{figure}
   \includegraphics[width=\textwidth]{fixed-step-internal-Th.png}
   \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $\theta$}
 \end{figure}
