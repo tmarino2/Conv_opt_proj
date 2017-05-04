@@ -22,7 +22,7 @@ for i = 1:max_iters
     [Th, ll] = proj_sub_grad( Th, grTh, 0.00001*alpha, W, H, X, lambda, eta, 2, num_inner_iters, step_over_k, eps);
 %     ObjTh = [ObjTh, norm(X - W*Th*H,'fro')^2];
     ObjThLL = [ObjThLL; ll];
-    Obj = [Obj, norm(X - W*Th*H,'fro')^2]
+    Obj = [Obj, norm(X - W*Th*H,'fro')^2/size(X,2)]
 end
 end
 

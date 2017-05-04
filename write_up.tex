@@ -315,17 +315,18 @@ Theorem 1.8 in lecture slides 4 now characterizes the linear convergence rate to
 
 The final method we consider is augmented Lagrangian. First, we take the Lagrangian
 of our objective
-\begin{equation}
-  {\cal L}\left(W, \Theta, H) = ||X - W\Theta H||_F^2 + \lambda ||\Theta||_1 - \sum_{i=1}^m \sum_{j=1}^m \mu_{ij} W_{ij} - \sum_{i=1}^m \sum_{j=1}^n \nu_{ij} H_{ij} - \sum_{i=1}^n \xi \Theta_{ii}.
-\end{equation}
+%\begin{equation}
+%  {\cal L}\left(W, \Theta, H) = ||X - W\Theta H||_F^2 + \lambda ||\Theta||_1 %- \sum_{i=1}^m \sum_{j=1}^m \mu_{ij} W_{ij} - \sum_{i=1}^m \sum_{j=1}^n \nu_{ij} H_{ij} %- \sum_{i=1}^n \xi \Theta_{ii}.
+%\end{equation}
 
 The augmented Lagrangian, in contrast, considers the following objective
-\begin{equation}
-  {\cal L}\left(W, \Theta, H) = ||X - W\Theta H||_F^2 + \lambda ||\Theta||_1 - \sum_{i=1}^m \sum_{j=1}^m \max(0, -W_{ij} + \frac{\mu_{ij}}{\rho})^2  - \sum_{i=1}^m \sum_{j=1}^n \nu_{ij} H_{ij} - \sum_{i=1}^n \xi \Theta_{ii}.
-\end{equation}
+%\begin{equation}
+%  {\cal L}\left(W, \Theta, H) = ||X - W\Theta H||_F^2 + \lambda ||\Theta||_1 - \sum_{i=1}^m \sum_{j=1}^m \max(0, -W_{ij} + \frac{\mu_{ij}}{\rho})^2  - \sum_{i=1}^m \sum_{j=1}^n \nu_{ij} H_{ij} - \sum_{i=1}^n \xi \Theta_{ii}.
+%\end{equation}
 
 \subsubsection{Fixed step size experiment results}
 \red{TODO: clean up}
+
 
 \begin{figure}
   \includegraphics[width=\textwidth]{fixed-step-alpha.png}
@@ -364,88 +365,87 @@ k\begin{figure}
 \end{figure}
 
 
-
 \subsection{Decreasing step size}
 None of the convergence results in lecture slides 6 hold any longer for projected subgradient descent with decreasing step size. However, we can still characterize the convergence in terms of objective and iterates for step size decreasing as $\frac{1}{t}$. From Theorem 1.11 in lecture slides 4 we know that the iterates for projected gradient descent for problems~\ref{problem_6},\ref{problem_7} and \ref{problem_8} will converge to an optimal point (given such exists). For~\ref{problem_6} and~\ref{problem_8} we can use Lemma 1.3 in lecture slides 6 to show that this would imply convergence in objective. From Lemma 1.3 in lecture slides 6 we know that if $f$ has an L-Lipschitz continuous gradient we have $f(x_k) - f(x^*) \leq \langle\nabla f(x^*)(x_k-x^*)\rangle + \frac{L}{2}\norm{x_k-x^*}^2$. Using Cauchy-Schwartz inequality we have $\langle\nabla f(x^*)(x_k-x^*)\rangle \leq \norm{\nabla f(x^*)}\norm{x_k-x^*}$ thus $f(x_k) - f(x^*) \leq \norm{x_k-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right)$ and since $\norm{\nabla f(x^*)}$ is bounded this shows convergence in objective. By triangle inequality we have $\norm{x_k-x^*} \leq \norm{x_k-x_{k+1}} + \norm{x_{k+1} - x^*}$ and thus $f(x_k) - f(x^*) \leq \norm{x_k-x_{k+1}}(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}) + \norm{x_{k+1}-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right) \leq \norm{x_k-x_{k+1}}c_1 + \tilde{\epsilon}$ where $c_1 = \norm{\nabla f(x^*)}  + \frac{L}{2}\norm{x_k-x^*}$ and $\tilde{\epsilon} = \norm{x_{k+1}-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right)$. Clearly for $k$ large enough $\tilde{\epsilon}$ is as small as we would like and $c_1$ is bounded thus for $k$ large enough $\norm{x_{k+1} - x_k} < \epsilon$ implies $f(x_k) - f(x^*)$ is small. This should somewhat justify our stopping criteria for~\ref{problem_6} and~\ref{problem_8}. None of the above derivations, however, hold for~\ref{problem_7} in fact the only thing we can argue is that the iterates $\Theta_k$ are going to converge to $\Theta^*$. This is quite disappointing compared to the results we were able to obtain for a constant step size. In practice as we can see from the experiments we still get satisfactory results.
 TODO:Include experiments and comment in same way as in previous section
 
 \subsubsection{Decreasing step size experiment results}
 
-\begin{figure}
-  \includegraphics[width=\textwidth]{decrease-step-alpha.png}
-  \caption{Our objective varying $\alpha$}
-\end{figure}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{decrease-step-lambda.png}
-  \caption{Our objective varying $\lambda$}
-\end{figure}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{decrease-step-eta.png}
-  \caption{Our objective varying $\eta$}
-\end{figure}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{decrease-step-internal-W.png}
-  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $W$}
-\end{figure}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{decrease-step-internal-H.png}
-  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $H$}
-\end{figure}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{decrease-step-internal-Th.png}
-  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $\theta$}
-\end{figure}
-
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{decrease-step-all.png}
-  \caption{All steps from alternating minimization problem concatenated together}
-\end{figure}
-
-
-
 
 
 
 \section{Simple Dual Averaging}
-\red{TODO}
-
+In this section we compare the SDA given in lecture slides 4 as \textbf{Algorithm 3}. We also address details in the implementation, convergence theory and stopping criteria used.
+\subsection{Algorithm and implementation}
+Lower case bold letters denote matrices (contrary to standard convention) and the norm is the Frobenius norm together with the associated standrard inner product for matrices. We follow the pseudo-code given in \textbf{Algorithm 3} in the lecture slides as already stated. The most interesting part of the algorithm is implementing the update $\x_{k+1} \leftarrow \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}\rangle + \frac{\beta_{k+1}}{2}\norm{\x - \x_0}^2$ for problems~\ref{problem_6},\ref{problem_7} and~\ref{problem_8}. The following lemma shows us that this is equivalent to the projection of $x_0 - \frac{1}{\beta_{k+1}}\s_{k+1}$ onto the convex set $\mathcal{X}$.
+\begin{lemma}
+  Solving $\text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}\rangle + \frac{\beta_{k+1}}{2}\norm{\x - \x_0}^2$ is equivalent to solving $\text{arg}\min_{\x\in\mathcal{X}}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2$
+\end{lemma}
+\begin{proof}
+  \begin{equation}
+    \begin{aligned}
+      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}\rangle + \frac{\beta_{k+1}}{2}\norm{\x - \x_0}^2 =\\
+      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1} - \beta_{k+1}\x_0\rangle + \frac{\beta_{k+1}}{2}\norm{\x}^2 =\\
+      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}- \beta_{k+1}\x_0\rangle + \frac{\beta_{k+1}}{2}\norm{\x }^2 + \frac{1}{2\beta_{k+1}}\norm{\s_{k+1} - \beta_{k+1}\x_0}^2 =\\
+      \text{arg}\min_{\x\in\mathcal{X}}\frac{\beta_{k+1}}{2}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2 =\\
+      \text{arg}\min_{\x\in\mathcal{X}}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2
+    \end{aligned}
+  \end{equation}
+\end{proof}
+For the set $\mathcal{X} := \{\x_{i,j} \geq 0\}$ it is easy to verify that the solution to $\text{arg}\min_{\x\in\mathcal{X}}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2$ is exactly given by the operator $\mathcal{P}(\x) = \tilde{\x}$ where
+\begin{equation*}
+  \mathcal{P}(\x)_{i,j} = \begin{cases}
+    \x_{i,j} & \x_{i,j} \geq 0\\
+    0 &\text{otherwise}
+    \end{cases}
+\end{equation*}.
+A simple way to see this is to form the Lagrangian $\mathcal{L}(\x,\y)$ for $\min_{\x\in\mathcal{X}}\frac{1}{2}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2$ and notice that the pair $(\mathcal{P}(\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1}),\y^*)$ satisfies KKT conditions. Here $\y^*$ is given by
+\begin{equation*}
+  \y^*_{i,j} = \begin{cases}
+    0 &  (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})_{i,j} \geq 0\\
+    -(\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})_{i,j} &\text{otherwise}
+    \end{cases}
+\end{equation*}
+All other steps of the algorithm are as given in the lecture slides and the $\beta_k$'s are chosen according to Theorem 1.15 in lecture slides 4.
 
 \subsubsection{SDA experiment results}
-\begin{figure}
-  \includegraphics[width=\textwidth]{sda-lambda.png}
-  \caption{Objective with varying $\lambda$}
+Even though we are given a reliable stopping criteria for this algorithm we are not able to implement it as it requires computation of the conjugate function of the objective which we do not know how to do except for problem~\ref{problem_8}. One can argue that an iterative method for approximately computing the conjugate functions and therefore the stopping criteria might give sufficient results, however, the overall run-time to obtain a solution to optimization problem~\ref{problem_5} is long enough without having to solve an additional optimization problem at each step of the sub-problem optimization routines. In the light of these concerns we choose to stop each SDA routine either after a fixed number of iterations or when consecutive iterates become $\epsilon$ close to each other. From Theorem 1.17 in lecture slides 4 we know that to get $\epsilon$-suboptimality for the optimization problem we would need the order of $\frac{1}{\epsilon^2}$ iterations, where the constant depends on an upper bound on the gradients and the radius of the ball centered at an optimal solution containing the initialization. From our experiments the norm of the gradients are bounded by roughly $\sim 100$ and the norm of the difference between initializations and the best solution we manage to recover is roughly $\sim 600$. The number of iterations for which we run our algorithms are $200$, $1000$ and $5000$ with additional $500$ iterations for optimization problem~\ref{problem_8}. The initializations are the same as for the experiments in projected gradient descent. As before we choose to run our $\lambda$ and $\eta$ experiments for only $200$ iterations per alternating minimization step for problems~\ref{problem_6} and~\ref{problem_7} and for $500$ iterations for problem~\ref{problem_8} in the interest of time. As before we run the alternating minimization algorithm~\ref{alg:meta_nmf} for $200$ iterations.
+\begin{center}
+\begin{figure}[h]
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.3]{SDA_overall}
+  \end{subfigure}
 \end{figure}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{sda-eta.png}
-  \caption{Objective with varying $\eta$}
+\end{center}
+We see that the smallest objective is obtained at $\eta= 0.01,\lambda= 0.01$ -- this is no surprise as already discussed since the original matrix $\X$ was not obtained as a product of matrices which are sparse or smooth. We see that the smoothness constraint is what seems to hurt the overall objective the most and might be the reason why we see a peak of the objective around the $100$ iteration of the alternating minimization. We also see that the sparsity constraint does not hurt the objective too much. To compare the rank of $\Theta$ we recover for $\lambda = 1,\eta = 0.01$ is 32 while when $\lambda = 0.01,\eta = 0.01$ it is 37. To remind the reader the rank of $\X$ is 18. The next figures show how the objective decreases at each alternating minimization step of $200/500$ iterations for different values of $\lambda,\eta$.
+\begin{center}
+  \begin{figure}[h]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{SDA_H_0.01_0.01}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{SDA_H_0.5_0.1}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{SDA_H_0.1_0.5}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{SDA_H_0.01_0.01last}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{SDA_H_0.5_0.1last}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{SDA_H_0.1_0.5last}.png}
+  \end{subfigure}
 \end{figure}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{sda-internal-W.png}
-  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $W$}
-\end{figure}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{sda-internal-H.png}
-  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $H$}
-\end{figure}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{sda-internal-Th.png}
-  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $\theta$}
-\end{figure}
-
-
-
-
-
+\end{center}
 \section{Augmented Lagrangian}
 
 
