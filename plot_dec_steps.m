@@ -19,14 +19,14 @@ alphasv=[];
 for alpha=alphas
     lambda = .01;
     eta = .01;
-    exp_name = sprintf('step_%0.5f_l_%0.2f_e_%0.2f.mat',alpha,lambda,eta);
+    exp_name = sprintf('deck_step_%0.5f_l_%0.2f_e_%0.2f.mat',alpha,lambda,eta);
     load(exp_name);
     alphasv = [alphasv; Obj];
 end
 plot(alphasv');
-title('Fixed step size, changing alpha');
+title('Decreasing step size, changing alpha');
 legend('.001', '.05', '.1', '.5');
-print('fixed-step-alpha.png', '-dpng');
+print('decrease-step-alpha.png', '-dpng');
 
 % generate the lambda plot
 max_length = 0;
@@ -35,14 +35,14 @@ lambdasv=[];
 for lambda=lambdas
     alpha=0.001;
     eta=.01;
-    exp_name = sprintf('step_%0.5f_l_%0.2f_e_%0.2f.mat',alpha,lambda,eta);
+    exp_name = sprintf('deck_step_%0.5f_l_%0.2f_e_%0.2f.mat',alpha,lambda,eta);
     load(exp_name);
     lambdasv= [lambdasv; Obj];
 end
 plot(lambdasv');
-title('Fixed step size, chnaging lambda');
+title('Decreasing step size, chnaging lambda');
 legend('.01','.1','.5','1','10');
-print('fixed-step-lambda.png', '-dpng');
+print('decrease-step-lambda.png', '-dpng');
 
 
 etas=[0.01,0.1,0.5,1,10];
@@ -50,27 +50,27 @@ etasv=[];
 for eta=etas
     alpha=0.001;
     lambda=0.01;
-    exp_name = sprintf('step_%0.5f_l_%0.2f_e_%0.2f.mat',alpha,lambda,eta);
+    exp_name = sprintf('deck_step_%0.5f_l_%0.2f_e_%0.2f.mat',alpha,lambda,eta);
     load(exp_name);
     etasv=[etasv;Obj];
 end
 plot(etasv');
-title('Fixed step size, changing eta');
+title('Decreasing step size, changing eta');
 legend('0.01','0.1','0.5','1','10');
-print('fixed-step-eta.png', '-dpng');
+print('decrease-step-eta.png', '-dpng');
 
-load('step_0.00100_l_0.01_e_0.01.mat');
+load('deck_step_0.00100_l_0.01_e_0.01.mat');
 plot_per_group(ObjWLL);
 title('Internal optimization steps of W for alpha=.001 lambda=.01 eta=.01');
-print('fixed-step-internal-W.png', '-dpng');
+print('decrease-step-internal-W.png', '-dpng');
 
 plot_per_group(ObjHLL);
 title('Internal optimization steps of H for alpha=.001 lambda=.01 eta=.01');
-print('fixed-step-internal-H.png', '-dpng');
+print('decrease-step-internal-H.png', '-dpng');
 
 plot_per_group(ObjThLL);
 title('Internal optimization steps of Theta for alpha=.001 lambda=.01 eta=.01');
-print('fixed-step-internal-Th.png', '-dpng');
+print('decrease-step-internal-Th.png', '-dpng');
 
 
 allSteps = [];
@@ -79,4 +79,4 @@ for i=1:length(ObjWLL)
 end
 plot(allSteps);
 title('All convex steps concatenated together');
-print('fixed-step-all.png','-dpng');
+print('decrease-step-all.png','-dpng');
