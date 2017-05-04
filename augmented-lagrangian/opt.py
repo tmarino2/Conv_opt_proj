@@ -124,11 +124,11 @@ def grad_theta(X, W, theta, H, L, eta, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, r
     
 def opt(X, n, m, r, L, eta, iters=2000, fhandle=None, fudge=0.01):
 
-    X = maximum(np.random.randn(n, m), 0)
-    W = maximum(np.random.randn(n, r), 0)
-    H = maximum(np.random.randn(r, m), 0)
-    theta = maximum(np.random.randn(r), 0)
-
+    #X = maximum(np.random.randn(n, m), 0)
+    #W = maximum(np.random.randn(n, r), 0)
+    #H = maximum(np.random.randn(r, m), 0)
+    #theta = maximum(np.random.randn(r), 0)#
+    
     mu_max = 100.
     
     Mu_W = maximum(np.random.randn(n, r), 0) + fudge

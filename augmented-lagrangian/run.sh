@@ -1,7 +1,7 @@
 
 	#!/bin/bash
 
-for lambda in 10.
+for lambda in 0.01
 do
     for eta in 0.01 0.1 0.5 1
     do
