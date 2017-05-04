@@ -322,7 +322,7 @@ of our objective
 \end{equation}
 
 The augmented Lagrangian, in contrast, considers the following objective
-{\scriptsize
+{\tiny
 \begin{equation}
   \begin{aligned}
   {\cal L}_{\textit{aug}}\left(W, \Theta, H\right) = ||X - W\Theta H||_F^2 + \lambda ||\Theta||_1 + \eta\sum_{i,j}\left(\W_{i,j} - \W_{i+1,j}\right)^2 - \sum_{i=1}^m \sum_{j=1}^m \max\left(0, -W_{ij} + \frac{\mu_{ij}}{\rho}\right)^2  - \sum_{i=1}^m \sum_{j=1}^n \max\left(0, -H_{ij} + \frac{\nu_{ij}}{\rho} \right)^2 - \sum_{i=1}^n \max\left(0, \Theta_{ii} - \frac{\xi}{\rho}\right)^2.
@@ -357,9 +357,9 @@ each individual one.
     \STATE{$H_{t+1} := \underset{{H \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W\Theta_t\H_t}_F^2 -  \sum_{i=1}^m \sum_{j=1}^m \max\left(0, -H_{ij} + \frac{\eta_{ij}}{\rho^k}\right)^2}$}
     \STATE{$\Theta_{t+1} := \underset{{\Theta \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W\Theta_t\H_t}_F^2 + \lambda ||\Theta||_1  -  \sum_{i=1}^n \max\left(0, -\Theta_{ii} + \frac{\xi^{k}_{ij}}{\rho^k}\right)^2}$}
     \STATE {\em STEP 2: Compute new approximation fo the multipliers}
-    \STATE $\mu_{ij} ^{k+1} - \left[\mu_{ij}^k - \rho_k W_{ij}\right]_{+}$, $\forall i, j$
-    \STATE $\eta_{ij}^{k+1} - \left[\eta_{ij}^k - \rho_k H_{ij}\right]_{+}$, $\forall i, j$
-    \STATE $\xi_{i}^{k+1} - \left[xi_{i}^k - \rho_k \Theta_{ii}\right]_{+}$, $\forall i$
+    \STATE $\mu_{ij} ^{k+1} \gets \left[\mu_{ij}^k - \rho_k W_{ij}\right]_{+}$, $\forall i, j$
+    \STATE $\eta_{ij}^{k+1} \gets \left[\eta_{ij}^k - \rho_k H_{ij}\right]_{+}$, $\forall i, j$
+    \STATE $\xi_{i}^{k+1} \gets \left[xi_{i}^k - \rho_k \Theta_{ii}\right]_{+}$, $\forall i$
     \STATE {\em STEP 3:}
     \STATE $V_{ij}^{\mu^k} = \min\left\{ W_{ij}, \mu_{ij}^k / \rho^k\right\}$, $\forall i, j$
     \STATE $V_{ij}^{\nu^k} = \min\left\{ H_{ij}, \nu_{ij}^k / \rho^k\right\}$, $\forall i, j$
@@ -372,7 +372,10 @@ each individual one.
     \STATE $k \gets k + 1$
   \ENDWHILE
   \end{algorithmic}
+  \label{alg:augmented-lagrangian}
 \end{algorithm}
+
+We perform the unconstrained optimization in Algorithm\~ref{alg:augmented-lagrangian} with L-BFGS \cite{liu1989limited}, using the standard SciPy implementation. To handle 
 
 
 \subsubsection{Fixed step size experiment results}
