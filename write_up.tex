@@ -364,8 +364,11 @@ each individual one.
     \STATE $V_{ij}^{\mu^k} = \min\left\{ W_{ij}, \mu_{ij}^k / \rho^k\right\}$, $\forall i, j$
     \STATE $V_{ij}^{\nu^k} = \min\left\{ H_{ij}, \nu_{ij}^k / \rho^k\right\}$, $\forall i, j$
     \STATE $V_{i}^{\xi^k} = \min\left\{ \Theta_{ii}, \xi_{ii}^k / \rho^k\right\}$, $\forall i, j$
+    \STATE $\rho^{k+1} \gets \gamma \rho^k$
     \STATE {\em STEP 4:}
-    \STATE \mu_{k+1} = 
+    \STATE $\mu_{ij}^{k+1} = \Pi_{\mu^k_{ij}}\left([0, \mu_{\text{max}}] \right)$, $\forall i, j$
+    \STATE $\nu_{ij}^{k+1} = \Pi_{\nu^k_{ij}}\left([0, \nu_{\text{max}}] \right)$, $\forall i, j$
+    \STATE $\xi_{i}^{k+1} = \Pi_{\xi^k_{i}}\left([0, \xi_{\text{max}}] \right)$, $\forall i$
     \STATE $k \gets k + 1$
   \ENDWHILE
   \end{algorithmic}
