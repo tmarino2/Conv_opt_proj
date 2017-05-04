@@ -332,17 +332,8 @@ The augmented Lagrangian, in contrast, considers the following objective
 We then proceed to optimize ${\cal L}_{\textit{aug}}$ with
 respect to each of the paramters $W, \Theta, H$ separately. We note
 that the objective is not {\em jointly} in all three, but convex in
-each individual one.
-
-
-%% \newcommand{\argmin}[4]{
-%% \begin{aligned}
-%% & #4 := \underset{#1}{\textrm{argmin}}
-%% && #2 \\
-%% & \textrm{subject to}
-%% &&  #3
-%% \end{aligned}
-%% }
+each individual one. We employ the algorithm discussed in Chapter 4
+of \newcite{birgin2014practical}. 
 
 \begin{algorithm}[H]
   \caption{Alternating minimization meta algorithm for problem~\ref{problem_5}}
@@ -356,7 +347,7 @@ each individual one.
     \STATE{$W_{t+1} := \underset{{W \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W\Theta_t\H_t}_F^2 + \eta\sum_{i,j}\left(\W_{i,j} - \W_{i+1,j}\right)^2 + \sum_{i,j} \max\left(0, -W_{ij} + \frac{\mu^k_{ij}}{\rho^k}\right)^2}$}
     \STATE{$H_{t+1} := \underset{{H \in \mathbb{R}^{d \times n}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W_{t+1}\Theta_t\H}_F^2 + \sum_{i,j} \max\left(0, -H_{ij} + \frac{\eta_{ij}}{\rho^k}\right)^2}$}
     \STATE{$\Theta_{t+1} := \underset{{\Theta \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W_{t+1}\Theta\H_{t+1}}_F^2 + \lambda ||\Theta||_1  + \sum_{i} \max\left(0, -\Theta_{ii} + \frac{\xi^{k}_{i}}{\rho^k}\right)^2}$}
-    \STATE {\em STEP 2: Compute new approximation fo the multipliers}
+    \STATE {\em STEP 2: Compute new approximation to the multipliers}
     \STATE $\mu_{ij} ^{k+1} \gets \left[\mu_{ij}^k - \rho_k W_{ij}\right]_{+}$, $\forall i, j$
     \STATE $\eta_{ij}^{k+1} \gets \left[\eta_{ij}^k - \rho_k H_{ij}\right]_{+}$, $\forall i, j$
     \STATE $\xi_{i}^{k+1} \gets \left[xi_{i}^k - \rho_k \Theta_{ii}\right]_{+}$, $\forall i$
@@ -365,7 +356,7 @@ each individual one.
     \STATE $V_{ij}^{\nu^k} = \min\left\{ H_{ij}, \nu_{ij}^k / \rho^k\right\}$, $\forall i, j$
     \STATE $V_{i}^{\xi^k} = \min\left\{ \Theta_{ii}, \xi_{ii}^k / \rho^k\right\}$, $\forall i, j$
     \STATE $\rho^{k+1} \gets \gamma \rho^k$
-    \STATE {\em STEP 4:}
+    \STATE {\em STEP 4: Project onto interval}
     \STATE $\mu_{ij}^{k+1} = \Pi_{\mu^k_{ij}}\left([0, \mu_{\text{max}}] \right)$, $\forall i, j$
     \STATE $\nu_{ij}^{k+1} = \Pi_{\nu^k_{ij}}\left([0, \nu_{\text{max}}] \right)$, $\forall i, j$
     \STATE $\xi_{i}^{k+1} = \Pi_{\xi^k_{i}}\left([0, \xi_{\text{max}}] \right)$, $\forall i$
@@ -375,7 +366,15 @@ each individual one.
   \label{alg:augmented-lagrangian}
 \end{algorithm}
 
-We perform the unconstrained optimization in Algorithm\~ref{alg:augmented-lagrangian} with L-BFGS \cite{liu1989limited}, using the standard SciPy implementation. To handle 
+We perform the unconstrained optimization in
+Algorithm\~ref{alg:augmented-lagrangian} with L-BFGS
+\cite{liu1989limited}, using the standard SciPy implementation. To
+handle the $L_1$ penalty of $\Theta$, new use the projection L-BFGS
+method described in \newcite{schmidt2009optimization}.  We chose
+L-BFGS because it was best available blackbox (assuming to access to a
+gradient) in SciPy. Each internal iteration of L-BFGS was run to convergence,
+which is described great detail at \url{https://docs.scipy.org/doc/scipy-0.19.0/reference/generated/scipy.optimize.fmin_l_bfgs_b.html}. 
+
 
 
 \subsubsection{Fixed step size experiment results}
