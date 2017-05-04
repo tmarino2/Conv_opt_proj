@@ -224,7 +224,6 @@ In problem~\ref{problem_4} $\Theta$ is introduced as the weight matrix for the m
   \end{aligned}
 \end{equation}
 \section{Algorithm}
-TODO: write down the gradients/subgradients of 6,7 and 8
 \par
 Problem~\ref{problem_5} is not a convex optimization problem, however, if one considers the 3 separate problems
 \begin{equation}\label{problem_6}
@@ -242,7 +241,8 @@ Problem~\ref{problem_5} is not a convex optimization problem, however, if one co
     \minimize{\H \in \mathbb{R}^{d\times n}}{\frac{1}{n}\norm{\X - \W\Theta\H}_F^2}{\H_{i,j}\geq 0}
   \end{aligned}
 \end{equation}
-each one is a convex optimization problem. What is more the objectives in~\ref{problem_6} and~\ref{problem_7} are smooth and each of the objectives is also strongly convex. The proposed algorithm is now to solve each of the convex optimization problems separately in an alternating fashion. Pseudo code is given in~\ref{alg:meta_nmf}.
+each one is a convex optimization problem. What is more the objectives in~\ref{problem_6} and~\ref{problem_8} are differentable and~\ref{problem_7} is strongly convex assuming that $\W$ and $\H$ are full rank. \red{TODO check}
+The proposed algorithm is now to solve each of the convex optimization problems separately in an alternating fashion. Pseudo code is given in algorithm~\ref{alg:meta_nmf}.
 
 \begin{algorithm}[H]
   \caption{Alternating minimization meta algorithm for problem~\ref{problem_5}}
@@ -279,13 +279,13 @@ If $f$ denotes the respective objective of problems~\ref{problem_6},\ref{problem
 \begin{equation}
   \label{subgrad_7}
   \begin{aligned}
-    \left(\frac{2}{n}\W^\top\left(\W\Theta\H-\X\right)\H +\lambda\text{sgn}\left(\Theta \right)\right)\odot\I \in \partial f(\Theta)
+    \partial f(\Theta) \ni \left(\frac{2}{n}\W^\top\left(\W\Theta\H-\X\right)\H +\lambda\text{sign}\left(\Theta \right)\right)\odot\I
   \end{aligned}
 \end{equation}
-where $\odot$ denotes the Hadamard product and ``sgn'' is the sign function applied element wise to $\Theta$. The derivation in~\ref{subgrad_7} holds because $\Theta$ is always constraint to be a diagonal matrix.
+where $\odot$ denotes the Hadamard product and ``sign'' is the sign function applied element wise to $\Theta$. The derivation in~\ref{subgrad_7} holds because $\Theta$ is always constraint to be a diagonal matrix.
 \section{Projected Gradient Descent}
 \subsection{Fixed step size}
-TODO: include experiments and comment on comparison with the theory
+\red{TODO: include experiments and comment on comparison with the theory}
 \par
 For this part of the project a modified version of \textbf{Algorithm 1} from lecture slides $4$ is used with different choices of fixed step size $\alpha_k$. The difference with the algorithm given in lecture 4 is the stopping criteria -- as already discussed in class checking if the norm of the gradient is close to $0$ will not work well for objectives including $l_1$ penalty term, instead we choose to stop our procedure either after a fixed number of steps (in our experiments this is 200 when solving problems~\ref{problem_6} and \ref{problem_7} and 500 when solving problem~\ref{problem_8}) or if the distance between consecutive iterates becomes less than $\epsilon$ (where $\epsilon$ was set to be in the range $[10^{-4},10^{-5}]$). As discussed in class this is usually not a good stopping criteria unless the objective is differentiable with $L$-Lipschitz continuous derivatives. Luckily both the objectives in~\ref{problem_6} and~\ref{problem_8} are differentiable with Lipschitz continuous gradients which we show now.
 \begin{lemma}\label{lem:lipsch_w}
