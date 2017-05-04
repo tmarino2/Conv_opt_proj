@@ -353,9 +353,9 @@ each individual one.
     \STATE $k \gets 0$
     \WHILE{$\norm{\W_{t-1}\H_{t-1}\Theta_{t-1} - \W_t\H_t\Theta_t}_F^2>\epsilon$}
     \STATE {\em STEP 1: Unconstrained Minimization}
-    \STATE{$W_{t+1} := \underset{{W \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W\Theta_t\H_t}_F^2 + \eta\sum_{i,j}\left(\W_{i,j} - \W_{i+1,j}\right)^2  -  \sum_{i=1}^m \sum_{j=1}^m \max\left(0, -W_{ij} + \frac{\mu^k_{ij}}{\rho^k}\right)^2}$}
-    \STATE{$H_{t+1} := \underset{{H \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W\Theta_t\H_t}_F^2 -  \sum_{i=1}^m \sum_{j=1}^m \max\left(0, -H_{ij} + \frac{\eta_{ij}}{\rho^k}\right)^2}$}
-    \STATE{$\Theta_{t+1} := \underset{{\Theta \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W\Theta_t\H_t}_F^2 + \lambda ||\Theta||_1  -  \sum_{i=1}^n \max\left(0, -\Theta_{ii} + \frac{\xi^{k}_{ij}}{\rho^k}\right)^2}$}
+    \STATE{$W_{t+1} := \underset{{W \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W\Theta_t\H_t}_F^2 + \eta\sum_{i,j}\left(\W_{i,j} - \W_{i+1,j}\right)^2 + \sum_{i,j} \max\left(0, -W_{ij} + \frac{\mu^k_{ij}}{\rho^k}\right)^2}$}
+    \STATE{$H_{t+1} := \underset{{H \in \mathbb{R}^{d \times n}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W_{t+1}\Theta_t\H}_F^2 + \sum_{i,j} \max\left(0, -H_{ij} + \frac{\eta_{ij}}{\rho^k}\right)^2}$}
+    \STATE{$\Theta_{t+1} := \underset{{\Theta \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W_{t+1}\Theta\H_{t+1}}_F^2 + \lambda ||\Theta||_1  + \sum_{i} \max\left(0, -\Theta_{ii} + \frac{\xi^{k}_{i}}{\rho^k}\right)^2}$}
     \STATE {\em STEP 2: Compute new approximation fo the multipliers}
     \STATE $\mu_{ij} ^{k+1} \gets \left[\mu_{ij}^k - \rho_k W_{ij}\right]_{+}$, $\forall i, j$
     \STATE $\eta_{ij}^{k+1} \gets \left[\eta_{ij}^k - \rho_k H_{ij}\right]_{+}$, $\forall i, j$
