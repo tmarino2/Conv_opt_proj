@@ -23,7 +23,7 @@ def func_orig(X, W, theta, H, L, eta):
     for i in xrange(W.shape[0]-1):
         W_col_diff += ((W[:, i] - W[:, i+1])**2).sum()
         
-    return 1.0/X.shape[1] *  ((X - estim)**2).sum() + L * np.abs(theta).sum() + L * np.abs(theta).sum() + eta * W_col_diff
+    return 1.0/X.shape[1] *  ((X - estim)**2).sum() + L * np.abs(theta).sum() + eta * W_col_diff
 
 
 def fd_W(X, W, theta, H, L, eta, Mu_W,  Mu_theta, Mu_H, rho_W, rho_theta, rho_H, eps=1.0):
@@ -124,11 +124,10 @@ def grad_theta(X, W, theta, H, L, eta, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, r
     
 def opt(X, n, m, r, L, eta, iters=2000, fhandle=None, fudge=0.01):
 
-    X = maximum(np.random.randn(n, m), 0)
     W = maximum(np.random.randn(n, r), 0)
     H = maximum(np.random.randn(r, m), 0)
-    theta = maximum(np.random.randn(r), 0)
-
+    theta = maximum(np.random.randn(r), 0)#
+    
     mu_max = 100.
     
     Mu_W = maximum(np.random.randn(n, r), 0) + fudge
