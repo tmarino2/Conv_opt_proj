@@ -311,8 +311,104 @@ To show the objective in~\ref{problem_7} is strongly convex we are going to show
 \end{proof}
 Theorem 1.8 in lecture slides 4 now characterizes the linear convergence rate to a local neighbourhood of the solution. To address our choice of stopping criteria, from Theorem 1.8 we know that  $d(\Theta_{k+1},\Theta^*)^2 < \alpha\frac{\kappa_g^2}{\gamma} + c^kd(\Theta_0,\Theta^*)^2$, where $\Theta^*$ is the optimal solution to~\ref{problem_7}, $c<1$ depends on $\alpha$ and $\gamma$ and $\kappa_g$ is a bound on the norm of the elements in the sub-differential of the objective. For $k$ large enough this implies that all of the $\Theta_{k}$'s are going to be contained in an open ball of fixed radius which is approximately $c^kd(\Theta_0,\Theta^*)^2$ -- this implies that the distance between any two consecutive iterates $d(\Theta_k,\Theta_{k+1})^2$ is also going to be less than $\alpha\frac{\kappa_g^2}{\gamma}$. Since the convergence theory does not guarantee anything more stopping our algorithm when $d(\Theta_k,\Theta_{k+1})^2$ becomes small enough seems acceptable. To be absolutely fair $d(\Theta_k,\Theta_{k+1})^2$ being small is only a necessary condition for convergence but not sufficient -- it might happen that two consecutive iterates are close to each other, however, they are still not close to the optimal $\Theta^*$. To alleviate this problem one might check that all the pair-wise distances between $\Theta_k,\Theta_{k+1},...,\Theta_{k+\tau}$ are small.
 
+\section{Augmented Lagrangian}
+
+The final method we consider is augmented Lagrangian. First, we take the Lagrangian
+of our objective
+\begin{equation}
+  \begin{aligned}
+  {\cal L}\left(W, \Theta, H\right) = ||X - W\Theta H||_F^2 + \lambda ||\Theta||_1 + \eta\sum_{i,j}\left(\W_{i,j} - \W_{i+1,j}\right)^2 - \sum_{i=1}^m \sum_{j=1}^m \mu_{ij} W_{ij} - \sum_{i=1}^m \sum_{j=1}^n \nu_{ij} H_{ij} - \sum_{i=1}^n \xi \Theta_{ii}.
+  \end{aligned}
+\end{equation}
+
+The augmented Lagrangian, in contrast, considers the following objective
+{\scriptsize
+\begin{equation}
+  \begin{aligned}
+  {\cal L}_{\textit{aug}}\left(W, \Theta, H\right) = ||X - W\Theta H||_F^2 + \lambda ||\Theta||_1 + \eta\sum_{i,j}\left(\W_{i,j} - \W_{i+1,j}\right)^2 - \sum_{i=1}^m \sum_{j=1}^m \max\left(0, -W_{ij} + \frac{\mu_{ij}}{\rho}\right)^2  - \sum_{i=1}^m \sum_{j=1}^n \max\left(0, -H_{ij} + \frac{\nu_{ij}}{\rho} \right)^2 - \sum_{i=1}^n \max\left(0, \Theta_{ii} - \frac{\xi}{\rho}\right)^2.
+  \end{aligned}
+\end{equation}
+}
+We then proceed to optimize ${\cal L}_{\textit{aug}}$ with
+respect to each of the paramters $W, \Theta, H$ separately. We note
+that the objective is not {\em jointly} in all three, but convex in
+each individual one.
+
+
+%% \newcommand{\argmin}[4]{
+%% \begin{aligned}
+%% & #4 := \underset{#1}{\textrm{argmin}}
+%% && #2 \\
+%% & \textrm{subject to}
+%% &&  #3
+%% \end{aligned}
+%% }
+
+\begin{algorithm}[H]
+  \caption{Alternating minimization meta algorithm for problem~\ref{problem_5}}
+  \label{alg:meta_nmf}
+  \begin{algorithmic}
+    \REQUIRE $\X,\W_0,\H_0,\Theta_0,\epsilon$
+    \ENSURE $\W_T,\H_T,\Theta_T$
+    \STATE $k \gets 0$
+    \WHILE{$\norm{\W_{t-1}\H_{t-1}\Theta_{t-1} - \W_t\H_t\Theta_t}_F^2>\epsilon$}
+    \STATE {\em STEP 1: Unconstrained Minimization}
+    \STATE{$W_{t+1} := \underset{{W \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W\Theta_t\H_t}_F^2 + \eta\sum_{i,j}\left(\W_{i,j} - \W_{i+1,j}\right)^2  -  \sum_{i=1}^m \sum_{j=1}^m \max\left(0, -W_{ij} + \frac{\mu^k_{ij}}{\rho^k}\right)^2}$}
+    \STATE{$H_{t+1} := \underset{{H \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W\Theta_t\H_t}_F^2 -  \sum_{i=1}^m \sum_{j=1}^m \max\left(0, -H_{ij} + \frac{\eta_{ij}}{\rho^k}\right)^2}$}
+    \STATE{$\Theta_{t+1} := \underset{{\Theta \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W\Theta_t\H_t}_F^2 + \lambda ||\Theta||_1  -  \sum_{i=1}^n \max\left(0, -\Theta_{ii} + \frac{\xi^{k}_{ij}}{\rho^k}\right)^2}$}
+    \STATE {\em STEP 2: Compute new approximation fo the multipliers}
+    \STATE $\mu_{ij} ^{k+1} - \left(\mu_{ij}^k - \rho_k W_{ij}\right)$, $\forall i, j$
+    \STATE $\eta_{ij}^{k+1} - \left(\eta_{ij}^k - \rho_k H_{ij}\right)$, $\forall i, j$
+    \STATE $\xi_{i}^{k+1} - \left(xi_{i}^k - \rho_k \Theta_{i}\right)$, $\forall i$
+    \STATE {\em STEP 3:}
+    \STATE
+    \STATE {\em STEP 4:}
+    \STATE
+    \STATE $k \gets k + 1$
+  \ENDWHILE
+  \end{algorithmic}
+\end{algorithm}
+
+
 \subsubsection{Fixed step size experiment results}
 \red{TODO: clean up}
+
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-alpha.png}
+  \caption{Our objective varying $\alpha$}
+\end{figure}
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-lambda.png}
+  \caption{Our objective varying $\lambda$}
+\end{figure}
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-eta.png}
+  \caption{Our objective varying $\eta$}
+\end{figure}
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-internal-W.png}
+  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $W$}
+\end{figure}
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-internal-H.png}
+  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $H$}
+\end{figure}
+
+k\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-internal-Th.png}
+  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $\theta$}
+\end{figure}
+
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-all.png}
+  \caption{All steps from alternating minimization problem concatenated together}
+\end{figure}
 
 
 \subsection{Decreasing step size}

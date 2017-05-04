@@ -126,9 +126,9 @@ def opt(X, n, m, r, L, eta, iters=2000, fhandle=None, fudge=0.01):
 
     W = maximum(np.random.randn(n, r), 0)
     H = maximum(np.random.randn(r, m), 0)
-    theta = maximum(np.random.randn(r), 0)#
+    theta = maximum(np.random.randn(r), 0)
     
-    mu_max = 100.
+    mu_max = 1000.
     
     Mu_W = maximum(np.random.randn(n, r), 0) + fudge
     Mu_H = maximum(np.random.randn(r, m), 0) + fudge
@@ -155,6 +155,7 @@ def opt(X, n, m, r, L, eta, iters=2000, fhandle=None, fudge=0.01):
 
         opt, _, _ = lbfgs(f, params, fprime=g, disp=0, maxiter=100)
         W = opt.reshape(W.shape)
+        W = np.maximum(0, W)
         
         # iterate on H
         params = H.reshape(-1)
@@ -169,6 +170,7 @@ def opt(X, n, m, r, L, eta, iters=2000, fhandle=None, fudge=0.01):
 
         opt, _, _ = lbfgs(f, params, fprime=g, disp=0, maxiter=100)
         H = opt.reshape(H.shape)
+        H = np.maximum(0, H)
         
         # iterate on theta
         params = theta.reshape(-1)
@@ -183,7 +185,9 @@ def opt(X, n, m, r, L, eta, iters=2000, fhandle=None, fudge=0.01):
         
         opt, _, _ = lbfgs(f, params, fprime=g, disp=0, maxiter=100)
         theta = opt.reshape(theta.shape)
-
+        
+        theta = np.maximum(0, theta)
+        
         string = "objective {0}: {1}".format(*(k, func_orig(X, W, theta, H, L, eta)))
         print string
         if fhandle is not None:
