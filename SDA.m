@@ -7,7 +7,7 @@ x_0 = x_k;
 x_k_hat = x_k;
 s_k = grad_x_k;
 betas = [1,1];
-while norm(grad_x_k)>eps && k <= max_iters
+while k <= max_iters
     if var == 1
         [ grad_x_k,~,~ ] = sub_grads( x_k ,A ,B , X, lambda, eta );
     elseif var == 2
@@ -28,13 +28,27 @@ while norm(grad_x_k)>eps && k <= max_iters
     end
     if mod(k, 10) == 0
         if var == 1
+<<<<<<< HEAD
              ll = norm(X - x_k_hat*A*B,'fro')^2/size(X,2);
         elseif var == 2
              ll = norm(X-A*x_k_hat*B,'fro')^2/size(X,2);
         else
              ll = norm(X-A*B*x_k_hat,'fro')^2/size(X,2);
+=======
+%              ll = norm(X - x_k_hat*A*B,'fro')^2;
+             ll = compute_f(X,x_k_hat,A,B,lambda,eta);
+        elseif var == 2
+%              ll = norm(X-A*x_k_hat*B,'fro')^2;
+             ll = compute_f(X,A,x_k_hat,B,lambda,eta);
+        else
+%              ll = norm(X-A*B*x_k_hat,'fro')^2;
+            ll = compute_f(X,A,B,x_k_hat,lambda,eta);
         end
-    objs = [objs, ll];
+        objs = [objs, ll];
+        if length(objs) > 2 && abs(objs(end - 1) - objs(end)) < .0001
+            break
+>>>>>>> 99b596ec48184271a496f3148f48ce602c47e82b
+        end
     end
     
 end
