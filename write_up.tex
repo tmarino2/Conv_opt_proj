@@ -819,7 +819,8 @@ This algorithm achieves the loss values on the objective ($\approx 0.41$). We at
 and success to the internal calls to the second-order optimization algorithm L-BFGS to solve the subproblems
 with each augmented Lagrangian run. The Figures~\ref{al:W},~\ref{al:H},~\ref{al:theta} show that each individual
 augmented Lagrangian problem is solved relatively quickly. For speed, we run each algorithm for a maximum of 50 iterations,
-and we observe that for each problem, we appear to converge well before then. 
+and we observe that for each problem, we appear to converge well before then. As a bonus, augmented Lagrangian
+also has very few tunable parameters, e.g., a learning rate, so it requires less human intervention to achieve good performance.
 
 \begin{figure}
   \includegraphics[width=\textwidth]{augmented-lagrangian/plots/objective.pdf}
