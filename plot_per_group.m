@@ -1,6 +1,6 @@
 function [ matr ] = plot_per_group( obj_cell )
 max_iter = 0;
-step=10;
+step=1;
 for i=1:step:length(obj_cell)
     if length(obj_cell{i}) > max_iter
         max_iter = length(obj_cell{i});
@@ -12,6 +12,5 @@ matr = zeros(length(obj_cell), max_iter);
 for i=1:step:length(obj_cell)
     matr(i, 1:length(obj_cell{i})) = obj_cell{i};
 end
-plot(matr');
 end
 
