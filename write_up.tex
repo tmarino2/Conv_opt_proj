@@ -336,31 +336,45 @@ each individual one. We employ the algorithm discussed in Chapter 4
 of \citet{birgin2014practical}.
 
 \begin{algorithm}[H]
-  \caption{Alternating minimization meta algorithm for problem~\ref{problem_5}}
+  \caption{Alternating minimization augmented lagrangian algorithm for problem~\ref{problem_5}}
   \label{alg:meta_nmf}
   \begin{algorithmic}
     \REQUIRE $\X,\W_0,\H_0,\Theta_0,\epsilon$
     \ENSURE $\W_T,\H_T,\Theta_T$
     \STATE $k \gets 0$
     \WHILE{$\norm{\W_{t-1}\H_{t-1}\Theta_{t-1} - \W_t\H_t\Theta_t}_F^2>\epsilon$}
-    \STATE {\em STEP 1: Unconstrained Minimization}
-    \STATE{$W_{t+1} := \underset{{W \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W\Theta_t\H_t}_F^2 + \eta\sum_{i,j}\left(\W_{i,j} - \W_{i+1,j}\right)^2 + \sum_{i,j} \max\left(0, -W_{ij} + \frac{\mu^k_{ij}}{\rho^k}\right)^2}$}
-    \STATE{$H_{t+1} := \underset{{H \in \mathbb{R}^{d \times n}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W_{t+1}\Theta_t\H}_F^2 + \sum_{i,j} \max\left(0, -H_{ij} + \frac{\eta_{ij}}{\rho^k}\right)^2}$}
-    \STATE{$\Theta_{t+1} := \underset{{\Theta \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W_{t+1}\Theta\H_{t+1}}_F^2 + \lambda ||\Theta||_1  + \sum_{i} \max\left(0, -\Theta_{ii} + \frac{\xi^{k}_{i}}{\rho^k}\right)^2}$}
-    \STATE {\em STEP 2: Compute new approximation to the multipliers}
-    \STATE $\mu_{ij} ^{k+1} \gets \left[\mu_{ij}^k - \rho_k W_{ij}\right]_{+}$, $\forall i, j$
-    \STATE $\eta_{ij}^{k+1} \gets \left[\eta_{ij}^k - \rho_k H_{ij}\right]_{+}$, $\forall i, j$
-    \STATE $\xi_{i}^{k+1} \gets \left[xi_{i}^k - \rho_k \Theta_{ii}\right]_{+}$, $\forall i$
-    \STATE {\em STEP 3:}
-    \STATE $V_{ij}^{\mu^k} = \min\left\{ W_{ij}, \mu_{ij}^k / \rho^k\right\}$, $\forall i, j$
-    \STATE $V_{ij}^{\nu^k} = \min\left\{ H_{ij}, \nu_{ij}^k / \rho^k\right\}$, $\forall i, j$
-    \STATE $V_{i}^{\xi^k} = \min\left\{ \Theta_{ii}, \xi_{ii}^k / \rho^k\right\}$, $\forall i, j$
-    \STATE $\rho^{k+1} \gets \gamma \rho^k$
-    \STATE {\em STEP 4: Project onto interval}
-    \STATE $\mu_{ij}^{k+1} = \Pi_{\mu^k_{ij}}\left([0, \mu_{\text{max}}] \right)$, $\forall i, j$
-    \STATE $\nu_{ij}^{k+1} = \Pi_{\nu^k_{ij}}\left([0, \nu_{\text{max}}] \right)$, $\forall i, j$
-    \STATE $\xi_{i}^{k+1} = \Pi_{\xi^k_{i}}\left([0, \xi_{\text{max}}] \right)$, $\forall i$
-    \STATE $k \gets k + 1$
+    %% \STATE {\em STEP 1: Unconstrained Minimization}
+    \FOR{$k = 1,..,10$}
+      \STATE{$W_{t+1} := \underset{{W \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W\Theta_t\H_t}_F^2 + \eta\sum_{i,j}\left(\W_{i,j} - \W_{i+1,j}\right)^2 + \sum_{i,j} \max\left(0, -W_{ij} + \frac{\mu^k_{ij}}{\rho^k}\right)^2}$}
+      \STATE $\mu_{ij} ^{k+1} \gets \left[\mu_{ij}^k - \rho_k W_{ij}\right]_{+}$, $\forall i, j$
+      \STATE $V_{ij}^{\mu^k} = \min\left\{ W_{ij}, \mu_{ij}^k / \rho^k\right\}$, $\forall i, j$
+      \STATE $\mu_{ij}^{k+1} = \Pi_{\mu^k_{ij}}\left([0, \mu_{\text{max}}] \right)$, $\forall i, j$
+    \ENDFOR
+    \STATE{$W_{t+1} = \mathbf{Proj}_{\ge 0}(W_{t+1})$}
+
+    \FOR{$k = 1,..,10$}
+      \STATE{$H_{t+1} := \underset{{H \in \mathbb{R}^{d \times n}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W_{t+1}\Theta_t\H}_F^2 + \sum_{i,j} \max\left(0, -H_{ij} + \frac{\eta_{ij}}{\rho^k}\right)^2}$}
+      \STATE $\eta_{ij}^{k+1} \gets \left[\eta_{ij}^k - \rho_k H_{ij}\right]_{+}$, $\forall i, j$
+      \STATE $V_{ij}^{\nu^k} = \min\left\{ H_{ij}, \nu_{ij}^k / \rho^k\right\}$, $\forall i, j$
+      \STATE $V_{i}^{\xi^k} = \min\left\{ \Theta_{ii}, \xi_{ii}^k / \rho^k\right\}$, $\forall i, j$
+    \ENDFOR
+    \STATE{$H_{t+1} = \mathbf{Proj}_{\ge 0}(H_{t+1})$}
+
+
+    \FOR{$k = 1,..,10$}
+      \STATE{$\Theta_{t+1} := \underset{{\Theta \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W_{t+1}\Theta\H_{t+1}}_F^2 + \lambda ||\Theta||_1  + \sum_{i} \max\left(0, -\Theta_{ii} + \frac{\xi^{k}_{i}}{\rho^k}\right)^2}$}
+      \STATE $\xi_{i}^{k+1} \gets \left[xi_{i}^k - \rho_k \Theta_{ii}\right]_{+}$, $\forall i$
+      \STATE $\nu_{ij}^{k+1} = \Pi_{\nu^k_{ij}}\left([0, \nu_{\text{max}}] \right)$, $\forall i, j$
+      \STATE $\xi_{i}^{k+1} = \Pi_{\xi^k_{i}}\left([0, \xi_{\text{max}}] \right)$, $\forall i$
+    \ENDFOR
+    \STATE{$\Theta_{t+1} = \mathbf{Proj}_{\ge 0}(\Theta_{t+1})$}
+
+
+    %% \STATE {\em STEP 2: Compute new approximation to the multipliers}
+    %% \STATE {\em STEP 3:}
+    %% \STATE $\rho^{k+1} \gets \gamma \rho^k$
+    %% \STATE {\em STEP 4: Project onto interval}
+    %% \STATE $k \gets k + 1$
   \ENDWHILE
   \end{algorithmic}
   \label{alg:augmented-lagrangian}
@@ -379,7 +393,7 @@ which is described great detail at \url{https://docs.scipy.org/doc/scipy-0.19.0/
 Our augmented Lagrangian method differs from the one presented in
 class due to the presence of the {\em inequality}
 constraints. However, the general idea is the same. By Theorem 4.1 in
-\newcite{birgin2014practical}, we are guaranteed that the algorithm
+\citet{birgin2014practical}, we are guaranteed that the algorithm
 generates as a convergence sequence, assuming a compact
 feasible set. Convergence rates for augmented Lagrangian were not discussed in either the class slides
 or the book chapter we applied.
