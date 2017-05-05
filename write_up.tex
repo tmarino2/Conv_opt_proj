@@ -532,10 +532,48 @@ We run the same experiments for decreasing step size as we did for fixed step si
   \label{DEC_WTH}
 \end{figure}
 From figure~\ref{DEC_WTH} we can see a couple of differences compared to the fixed step size case -- first the objective for $\H$ decreases a lot more and smoothly, secondly the objective for $\Theta$ stays almost the same and finally during the last $10$ calls to PGD with decreasing step size to solve problem~\ref{problem_6} the objective for $\W$ keeps restarting from the same place. We also notice that the objective for $\W$ decreases much quicker than for the fixed step size which suggests convergence rate faster than $\frac{1}{\sqrt{k}}$ which are the only guarantees we have from the theory we studied.
+\par
+Next we change the initial step size for the three optimization subproblems as we did for the fixed step-size case. We run PGD for $5000$ iterations and rescale the initial step as we did before. The outer most loop is ran for only $100$ iterations. The non-rescaled $\alpha$ is set to $0.01$ and $\lambda = 0.01,\eta= 0.01$. For rescaling with $10/0.1$ we get overall objective value $2.54$ with sparsity for $\Theta$ equal to 13. For rescaling with $100/0.01$ the overall objective value is $1.99$ with sparsity for $\Theta$ equal to 16. Below we present the plots of the overall objective and the objective over several different iterations of the outer loop for $\W,\Theta$ and $\H$ as done before.
+\begin{figure}[H]
+  %\begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{DEC_var_overall.png}
+    \caption{Overall objective for changing the alpha between different suboptimization problems (100 and 0.01)}
+  %\end{subfigure}
+\end{figure}
+\begin{figure}[H]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{DEC_var_W.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{DEC_var_Th.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{DEC_var_H.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{DEC_var_Wlast.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{DEC_var_Thlast.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{DEC_var_Hlast.png}
+  \end{subfigure}
+
+  \caption{Plots of $W, H, \Theta$ optimized on the first and last 10 iterations of projected gradient decent with rescaled initial values of $\alpha$ by 100/0.01 respectively for $\H$ and $\Theta$}
+\end{figure}
+It is interesting to note that the when optimizing over $\W$ between each call of the PGD algorithm the objective is much more stable and always starts from a lower value than the one from previous iterations. We also see quicker convergence of $\H$ and the overall objective. One should note that the better overall performance is most likely not due to the correct rescaling but to the fact we run PGD for each of the convex subproblems for a lot more iterations. We also note that the sparsity of $\Theta$ seems to be a bit arbitrary even though we use the same sparsity parameter -- this is most likely due to the random initialization of the matrix. To conclude PGD with decreasing step size performance better both in terms of stability and overall objective value compare to its fixed step size counterpart. The better performance can not simply be explained by the fact that PGD with fixed step size will only converge to a local neighbourhood of the optimal solution depending on the step-size as it does not seem that it ever manages to reach the convergence neighbourhood. We suspect a much better explanation of faster convergence is the stability of the gradient norms when step-size is decreasing and the initial quicker rate of convergence due to the larger step size. Overall we were also surprised by the slow/no convergence of the objective for $\Theta$ especially for the fixed step size PGD since as we already argued the objective is strongly convex and we expect at least linear convergence to a local neighbourhood of the optimal solution for each call of PGD. This might be because of poor choice of initial step size when solving problem~\ref{problem_7}.
+
 
 
 \section{Simple Dual Averaging}
-In this section we compare the SDA given in lecture slides 4 as \textbf{Algorithm 3}. We also address details in the implementation, convergence theory and stopping criteria used.
+In this section we discuss the implementation and performance of SDA given in lecture slides 4 as \textbf{Algorithm 3}.
 \subsection{Algorithm and implementation}
 Lower case bold letters denote matrices (contrary to standard convention) and the norm is the Frobenius norm together with the associated standrard inner product for matrices. We follow the pseudo-code given in \textbf{Algorithm 3} in the lecture slides as already stated. The most interesting part of the algorithm is implementing the update $\x_{k+1} \leftarrow \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}\rangle + \frac{\beta_{k+1}}{2}\norm{\x - \x_0}^2$ for problems~\ref{problem_6},\ref{problem_7} and~\ref{problem_8}. The following lemma shows us that this is equivalent to the projection of $x_0 - \frac{1}{\beta_{k+1}}\s_{k+1}$ onto the convex set $\mathcal{X}$.
 \begin{lemma}
@@ -982,7 +1020,19 @@ also has very few tunable parameters, e.g., a learning rate, so it requires less
 \end{figure}
 \end{center}
 
-
+\section{Discussion}
+In table~\ref{my-label} we compare the best overall objective value we achieved for each of the optimization procedures we apply to problems~\ref{problem_6},\ref{problem_7} and \ref{problem_8}.
+\begin{table}[H]
+\centering
+\caption{Comparison between overall objective values achieved}
+\label{my-label}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+                         & PGD with fixed step & PGD with decreasing step & SDA  & Augmented Lagrangian \\ \hline
+Best overall performance & 1.99                & 1.99                     & 2.04 & 0.41                 \\ \hline
+\end{tabular}
+\end{table}
+The Augmented Lagrangian algorithm performs best overall by far. It also seems to be the best approach when it comes to solving separately problems~\ref{problem_6} and~\ref{problem_8} both in terms of convergence rates and in terms of stability when $\eta$ and $\lambda$ vary. All other methods perform similarly to each other as can be seen from our discussions in the previous sections. The only disadvantage of the Augmented Lagrangian approach is that at each iteration of an Augmented Lagrangian call for each of~\ref{problem_6},\ref{problem_7} and \ref{problem_8} requires us to solve another unconstrained optimization problem which in the case of~\ref{problem_7} is not differentiable and for none of the problems does it have a closed form solution so we have to apply another iterative approach to solve it. If it were not for the quick convergence of the overall procedure this approach would not be feasible in terms of run time.
 % this was moved above
 %% \section{OTHER STUFF MOVE THIS}
 %% \begin{figure}[H]
