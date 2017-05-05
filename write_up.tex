@@ -367,39 +367,191 @@ Even though we are given a reliable stopping criteria for this algorithm we are 
   \end{subfigure}
 \end{figure}
 \end{center}
-We see that the smallest objective is obtained at $\eta= 0.01,\lambda= 0.01$ -- this is no surprise as already discussed since the original matrix $\X$ was not obtained as a product of matrices which are sparse or smooth. We see that the smoothness constraint is what seems to hurt the overall objective the most and might be the reason why we see a peak of the objective around the $100$ iteration of the alternating minimization. We also see that the sparsity constraint does not hurt the objective too much. To compare the rank of $\Theta$ we recover for $\lambda = 1,\eta = 0.01$ is 32 while when $\lambda = 0.01,\eta = 0.01$ it is 37. To remind the reader the rank of $\X$ is 18. The next figures show how the objective decreases at each alternating minimization step of $200/500$ iterations for different values of $\lambda,\eta$.
+We see that the smallest objective is obtained at $\eta= 0.01,\lambda= 0.01$ -- this is no surprise as already discussed since the original matrix $\X$ was not obtained as a product of matrices which are sparse or smooth. We see that the smoothness constraint is what seems to hurt the overall objective the most and might be the reason why we see a peak of the objective around the $100$ iteration of the alternating minimization. We also see that the sparsity constraint does not hurt the objective too much. To compare the rank of $\Theta$ we recover for $\lambda = 1,\eta = 0.01$ is 32 while when $\lambda = 0.01,\eta = 0.01$ it is 37. To remind the reader the rank of $\X$ is 18. The next figures show how the objective decreases at each alternating minimization step of $200/500$ iterations for different values of $\lambda,\eta$. In each figure we plot how the objective in~\ref{problem_5} changes for a complete run of the SDA procedure to solve problem~\ref{problem_6},\ref{problem_7} or \ref{problem_8}. We do this for the first $25$ and the last $25$ calls to the SDA algorithm. The objective value is only computed every $10$ iterations.
+\begin{center}
+  \begin{figure}[H]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_H_0.01_0.01}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_H_0.5_0.1}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_H_0.1_0.5}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_H_0.01_0.01last}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_H_0.5_0.1last}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_H_0.1_0.5last}.png}
+  \end{subfigure}
+  \caption{Plots of the overall objective as problem~\ref{problem_8} is being solved by SDA}
+  \label{fig:SDA_H}
+  \end{figure}
+\end{center}
+In figure~\ref{fig:SDA_H} we show the objective as $\H$ is being optimized over. As it is evident from the plots the objective does not change too much with $\H$ for later calls to SDA. This is consistent with the $\mathcal{O}(\frac{1}{\epsilon^2})$ convergence rate as the constant (by constant we refer to the quantity $D + \frac{k_g^2}{2}$ in the proof of Theorem 1.17 in lecture slides 4) depends on the norm of the gradient of problem~\ref{problem_8} (as already discussed) which in this case is around $900$.
 \begin{center}
   \begin{figure}[h]
     \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{SDA_H_0.01_0.01}.png}
+    \includegraphics[scale=0.12]{{SDA_Th_0.01_0.01}.png}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{SDA_H_0.5_0.1}.png}
+    \includegraphics[scale=0.12]{{SDA_Th_0.5_0.1}.png}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{SDA_H_0.1_0.5}.png}
+    \includegraphics[scale=0.12]{{SDA_Th_0.1_0.5}.png}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{SDA_H_0.01_0.01last}.png}
+    \includegraphics[scale=0.12]{{SDA_Th_0.01_0.01last}.png}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{SDA_H_0.5_0.1last}.png}
+    \includegraphics[scale=0.12]{{SDA_Th_0.5_0.1last}.png}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{SDA_H_0.1_0.5last}.png}
+    \includegraphics[scale=0.12]{{SDA_Th_0.1_0.5last}.png}
   \end{subfigure}
-\end{figure}
+  \caption{Plots of the overall objective as problem~\ref{problem_7} is being solved by SDA}
+  \label{fig:SDA_Th}
+  \end{figure}
 \end{center}
+Figure~\ref{fig:SDA_Th} contains similar experiments for $\Theta$, however, we observe something interesting -- unlike for $\H$ we see that at each consecutive call to SDA in the alternating minimization algorithm the objective for $\Theta$ goes up. This as a whole should not be a surprise as the objective in~\ref{problem_5} is not jointly convex in $\Theta,\H$ and $\W$ so we do not expect that an alternating minimization approach is always going to decrease the objective at each call. The more interesting observation here is the rate at which the objective decreases in the SDA algorithm -- it looks like it almost decreases at a linear rate which is unexpected as the theory suggest it should have sublinear behavior. One can argue that this might be related to the constant in the $\mathcal{O}(\frac{1}{\epsilon^2})$ being small for~\ref{problem_7} -- from our experiments it is around $120$.
+\begin{center}
+  \begin{figure}[H]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_W_0.01_0.01}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_W_0.5_0.1}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_W_0.1_0.5}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_W_0.01_0.01last}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_W_0.5_0.1last}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_W_0.1_0.5last}.png}
+  \end{subfigure}
+  \caption{Plots of the overall objective as problem~\ref{problem_6} is being solved by SDA}
+  \label{fig:SDA_W}
+  \end{figure}
+\end{center}
+Finally in figure~\ref{fig:SDA_W} we show how the objective changes when solving~\ref{problem_6}. For early runs of SDA we see similar behavior to what is happening when solving~\ref{problem_8} with slightly faster convergence. This is within our expectations as the constant hidden in $\mathcal{O}(\frac{1}{\epsilon^2})$ is around $600$. For later applications (the last 25) we see behavior similar to~\ref{problem_7}. Our conjecture is that the norm of the gradients becomes much smaller as $\W_t$ approaches the overall optimal $\W^*$ and thus the constant $D+\frac{k_g^2}{2}$ since $D$ naturally decreases as $\W_t$ converges to $\W^*$.
+\par
+Even though we manage to get good performance in terms of convergence (compared to our best overall result) we still only use a small amount of iterations when solving each of the problems~\ref{problem_6},\ref{problem_7},\ref{problem_8} so we have no guarantees to be close to the optimal solution. To address this problem we run another two experiments in which the the number of iterations each SDA is ran for is $1000$ and $5000$. The number of iterations for the outer-most loop of the alternating optimization algorithm is still $250$. We only run these experiments for $\eta = 0.01$ and $\lambda = 0.01$ as they are very time-consuming.
+\begin{centering}
+  \begin{figure}[H]
+    \includegraphics[scale = 0.3]{{SDA_overall1000}.png}
+    \caption{Overall objective when SDA is ran for $1000$ iterations.}
+    \label{fig:SDA_1000}
+  \end{figure}
+\end{centering}
+The overall objective when SDA is ran for $1000$ iterations at each step is plotted in figure~\ref{fig:SDA_1000}. The best value achieved is $2.9022$. Comparing this to the best value achieved when SDA was ran for only $200$ iterations -- $5.8968$, it is better. In figure~\ref{fig:SDA_WTH1000} the individual runs are plotted for $\W$, $\Theta$ and $\H$.
+\begin{center}
+  \begin{figure}[H]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_W_1000}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_H_1000}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_Th_1000}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_W_1000last}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_H_1000last}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_Th_1000last}.png}
+  \end{subfigure}
+  \caption{Plots of objective as $\W$, $\Theta$ and $\H$ are being optimized over with SDA for $1000$ iterations.}
+  \label{fig:SDA_WTH1000}
+  \end{figure}
+\end{center}
+All the plots look very similar to the ones where SDA is only ran for $200$ iterations in terms of how quickly the objective converges. The main difference seems to stem from the fact that after each individual call to SDA with $1000$ iterations the obtained solution has a slightly lower objective value compared to the SDA with $200$ iterations. These differences seem to diminish over the course of the $250$ iterations of the outer most loop and we conjecture that if we ran the outer loop for more than $250$ we would get about the same results. Comparing the run-time of both SDA with $200$ iterations and SDA with $1000$ iterations the gain is almost insignificant. We do not expect running SDA for $5000$ iterations per optimization problem is going to perform much better. The plots containing the experiments in which SDA is ran for $5000$ iterations can be seen in figures~\ref{fig:SDA_5000} and~\ref{fig:SDA_WTH5000}. The best value we get for the overall objective is $2.0425$.
+\begin{centering}
+  \begin{figure}[H]
+    \includegraphics[scale = 0.3]{{SDA_overall5000}.png}
+    \caption{Overall objective when SDA is ran for $5000$ iterations.}
+    \label{fig:SDA_5000}
+  \end{figure}
+\end{centering}
+\begin{center}
+  \begin{figure}[H]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_W_5000}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_H_5000}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_Th_5000}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_W_5000last}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_H_5000last}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{SDA_Th_5000last}.png}
+  \end{subfigure}
+  \caption{Plots of objective as $\W$, $\Theta$ and $\H$ are being optimized over with SDA for $5000$ iterations.}
+  \label{fig:SDA_WTH5000}
+  \end{figure}
+\end{center}
+For a final experiment on stopping criteria we ran SDA stopping the algorithm if the distance between two consecutive iterates became less than $10^{-4}$ (or since at early stages of the overall optimization procedure it took too many iterations we stopped it after the first $5000$ iterations). We noticed that after the first $50$ iterations of the overall alternating minimization procedure the SDA algorithm was stopping before the $5000$ iterations expired. The result for the overall objective at the end was $2.8784$ which is slightly better than just stopping SDA after $1000$ iterations and worse than stopping SDA after $5000$ iterations. This implies that stopping when iterates do not change too much between iterations is not enough to guarantee better overall performance. The only plot we provide~\ref{fig:SDA_STOP} is for the overall objective as the plots for the separate problems are almost identical to the ones for SDA with $1000$ iterations.
+\par
+To conclude this section -- we did not observe anything unexpected considering theory of convergence of SDA. The most surprising results were in the convergence speed of $\Theta$ but this can still be explained by the smaller distance between initialization and optimal $\Theta$ and smaller norm of the gradients for the objective. We also observed that for $\Theta$ and at later iterations of the alternating minimization procedure for $\W$ that a lot of computational work is wasted as each optimization subproblem starts almost at the same objective value as the previous.
+\begin{center}
+  \begin{figure}[H]
+    \includegraphics[scale = 0.3]{{SDA_overall_early}.png}
+    \caption{Overall objective when SDA is ran for $5000$ iterations.}
+    \label{fig:SDA_STOP}
+  \end{figure}
+\end{center}
+
 \section{Augmented Lagrangian}
 
-
-\red{TODO}
 
 
 \bibliographystyle{plain}
