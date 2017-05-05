@@ -258,7 +258,7 @@ The proposed algorithm is now to solve each of the convex optimization problems 
   \end{algorithmic}
 \end{algorithm}
 
-The main focus of our project is now to solve each of the problems~\ref{problem_6},\ref{problem_7},\ref{problem_8} by using different algorithms explored in class, comparing our empirical observations with the derived convergence results. The algorithms we choose to compare are Projected Gradient/Subgradient Descent, Simple Dual Averaging and Augmented Lagrangian. For Projected Gradient/Subgradient Descent we both experiment with fixed step size and decreasing step size as $\frac{1}{t}$. We are also going to assume that all the minimizers of the above problems are in some compact set -- it is not hard to imagine that this holds true, for example consider minimizing the objective in~\ref{problem_6}. If we let $\norm{\W}_F$ go to infinity for fixed $\Theta,\H$ and $\X$ the objective is going to go to infinity and thus $\norm{\W}_F$ must be bounded so we can assume that there exists optimal $\W^*$ is in some bounded closed ball with respect to the Frobenius norm. Thus we can restrict our attention on solving the optimization problems on the intersection of closed set with a compact set i.e. a compact set. Thus we can assume the existence of at least one minimizer of each of the optimization problems~\ref{problem_6},\ref{problem_7} and~\ref{problem_8}
+The main focus of our project is now to solve each of the problems~\ref{problem_6},\ref{problem_7},\ref{problem_8} by using different algorithms explored in class, comparing our empirical observations with the derived convergence results. The algorithms we choose to compare are Projected Gradient/Subgradient Descent, Simple Dual Averaging and Augmented Lagrangian. For Projected Gradient/Subgradient Descent we both experiment with fixed step size and decreasing step size as $\frac{1}{t}$. We are also going to assume that all the minimizers of the above problems are in some compact set -- it is not hard to imagine that this holds true, for example consider minimizing the objective in~\ref{problem_6}. If we let $\norm{\W}_F$ go to infinity for fixed $\Theta,\H$ and $\X$ the objective is going to go to infinity and thus $\norm{\W}_F$ must be bounded so we can assume that there exists optimal $\W^*$ is in some bounded closed ball with respect to the Frobenius norm. Thus we can restrict our attention on solving the optimization problems on the intersection of closed set with a compact set i.e. a compact set. Thus we can assume the existence of at least one minimizer of each of the optimization problems~\ref{problem_6},\ref{problem_7} and~\ref{problem_8}.  A similar argument holds for $\Theta$ and $\H$.
 \subsection{Subgradients for problems~\ref{problem_6},\ref{problem_7},\ref{problem_8}}
 If $f$ denotes the respective objective of problems~\ref{problem_6},\ref{problem_7} and~\ref{problem_8} then gradients and an element of the subdifferential of~\ref{problem_7} is given by
 \begin{equation}
@@ -333,7 +333,7 @@ We then proceed to optimize ${\cal L}_{\textit{aug}}$ with
 respect to each of the paramters $W, \Theta, H$ separately. We note
 that the objective is not {\em jointly} in all three, but convex in
 each individual one. We employ the algorithm discussed in Chapter 4
-of \newcite{birgin2014practical}. 
+of \citet{birgin2014practical}.
 
 \begin{algorithm}[H]
   \caption{Alternating minimization meta algorithm for problem~\ref{problem_5}}
@@ -370,10 +370,10 @@ We perform the unconstrained optimization in
 Algorithm\~ref{alg:augmented-lagrangian} with L-BFGS
 \cite{liu1989limited}, using the standard SciPy implementation. To
 handle the $L_1$ penalty of $\Theta$, new use the projection L-BFGS
-method described in \newcite{schmidt2009optimization}.  We chose
+method described in \citet{schmidt2009optimization}.  We chose
 L-BFGS because it was best available blackbox (assuming to access to a
 gradient) in SciPy. Each internal iteration of L-BFGS was run to convergence,
-which is described great detail at \url{https://docs.scipy.org/doc/scipy-0.19.0/reference/generated/scipy.optimize.fmin_l_bfgs_b.html}. 
+which is described great detail at \url{https://docs.scipy.org/doc/scipy-0.19.0/reference/generated/scipy.optimize.fmin_l_bfgs_b.html}.
 
 
 
