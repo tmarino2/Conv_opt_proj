@@ -440,41 +440,41 @@ We briefly comment on what is observed -- first the objective between each call 
 \end{figure}
 The lowest objective value for~\ref{problem_5} we get when running the $5000$ itertations per suboptimization problem with rescaling factors $10$ and $0.1$ is $2.31$ and with rescaling factors $100$ and $0.01$ is $1.985$. As we can see both the rescaling and not keeping step-size constant across optimization problems helps with improving the objective significantly. The sparsity for $\Theta$ was 16. We also ran the same experiment with $1000$ iterations per suboptimization problem and the best overall objective we founds for rescaling factors $10$ and $0.1$ was $55.49$ and for rescaling factors $100$ and $0.01$ was $8.7182$ with sparsity for $\Theta$ 17. We conclude that changing the step size significantly improves the quality of the best solution overall for the objective in~\ref{problem_5}. We also ran an experiment where we stopped each of the PGD algorithms after distance between consecutive iterates became smaller than $5*10^{-5}$. The best objective value we found was $54.8$ and the sparsity of $\Theta$ was 21.
 
-%% \begin{figure}
-%%   \includegraphics[width=\textwidth]{fixed-step-alpha.png}
-%%   \caption{Our objective varying $\alpha$}
-%% \end{figure}
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-alpha.png}
+  \caption{Our objective varying $\alpha$}
+\end{figure}
 
-%% \begin{figure}
-%%   \includegraphics[width=\textwidth]{fixed-step-lambda.png}
-%%   \caption{Our objective varying $\lambda$}
-%% \end{figure}
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-lambda.png}
+  \caption{Our objective varying $\lambda$}
+\end{figure}
 
-%% \begin{figure}
-%%   \includegraphics[width=\textwidth]{fixed-step-eta.png}
-%%   \caption{Our objective varying $\eta$}
-%% \end{figure}
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-eta.png}
+  \caption{Our objective varying $\eta$}
+\end{figure}
 
-%% \begin{figure}
-%%   \includegraphics[width=\textwidth]{fixed-step-internal-W.png}
-%%   \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $W$}
-%% \end{figure}
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-internal-W.png}
+  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $W$}
+\end{figure}
 
-%% \begin{figure}
-%%   \includegraphics[width=\textwidth]{fixed-step-internal-H.png}
-%%   \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $H$}
-%% \end{figure}
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-internal-H.png}
+  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $H$}
+\end{figure}
 
-%% k\begin{figure}
-%%   \includegraphics[width=\textwidth]{fixed-step-internal-Th.png}
-%%   \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $\theta$}
-%% \end{figure}
+k\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-internal-Th.png}
+  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $\theta$}
+\end{figure}
 
 
-%% \begin{figure}
-%%   \includegraphics[width=\textwidth]{fixed-step-all.png}
-%%   \caption{All steps from alternating minimization problem concatenated together}
-%% \end{figure}
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-all.png}
+  \caption{All steps from alternating minimization problem concatenated together}
+\end{figure}
 
 
 \subsection{Decreasing step size}
@@ -795,12 +795,13 @@ of Birgin (2014) \cite{birgin2014practical}.
 
 We perform the unconstrained optimization in
 Algorithm~\ref{alg:augmented-lagrangian} with L-BFGS
-\cite{liu1989limited}, using the standard SciPy implementation. We set $\mu_\text{max}, \nu_\text{max}, \xi_\text{max}$ to 100. To
+\cite{liu1989limited}, using the standard SciPy implementation. We set $\mu_\text{max}, \nu_\text{max}, \xi_\text{max}$ to 100. We
+note that the function $\max(0, \cdot)^2$ is differentiable in $x$. To
 handle the $L_1$ penalty of $\Theta$, we use the projected L-BFGS
 method described in Schmidt 2009 \cite{schmidt2009optimization}.  We chose
 L-BFGS because it was best available blackbox (assuming to access to a
 gradient) in SciPy. Each internal iteration of L-BFGS was run to convergence,
-which is described great detail at \url{https://docs.scipy.org/doc/scipy-0.19.0/reference/generated/scipy.optimize.fmin_l_bfgs_b.html}.
+which is described in  great detail at \url{https://docs.scipy.org/doc/scipy-0.19.0/reference/generated/scipy.optimize.fmin_l_bfgs_b.html}.
 
 \subsection{Theory}
 Our augmented Lagrangian method differs from the one presented in
@@ -813,44 +814,94 @@ or the book chapter we applied.
 
 
 \subsection{Experiments}
+We run the augmented Lagrangian block coordinate descent for 300 iterations since convergence is apparent.
+This algorithm achieves the loss values on the objective ($\approx 0.41$). We attribute this algorithm's speed
+and success to the internal calls to the second-order optimization algorithm L-BFGS to solve the subproblems
+with each augmented Lagrangian run. The Figures~\ref{al:W},~\ref{al:H},~\ref{al:theta} show that each individual
+augmented Lagrangian problem is solved relatively quickly. For speed, we run each algorithm for a maximum of 50 iterations,
+and we observe that for each problem, we appear to converge well before then. As a bonus, augmented Lagrangian
+also has very few tunable parameters, e.g., a learning rate, so it requires less human intervention to achieve good performance.
 
 \begin{figure}
   \includegraphics[width=\textwidth]{augmented-lagrangian/plots/objective.pdf}
-  \caption{Our objective varying with different $\lambda$ and $\eta$ values.}
+  \caption{Our objective optimized with Augmented Lagrangian varying with different $\lambda$ and $\eta$ values.}
 \end{figure}
 
 \begin{center}
   \begin{figure}[h]
     \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=0.01,eta0.01}.pdf}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/W:lambda=0.01,eta0.01}.pdf}
     \caption{$\lambda=0.01,\eta=0.01$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=0.01,eta1.0}.pdf}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/W:lambda=0.01,eta1.0}.pdf}
     \caption{$\lambda=0.01,\eta=1.0$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=0.5,eta0.1}.pdf}
-    \caption{$\lambda=0.5 \eta=0.1$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/W:lambda=0.5,eta0.1}.pdf}
+    \caption{$\lambda=0.5,\eta=0.1$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=1.0,eta0.01}.pdf}
-    \caption{$\lambda=1.0 \eta=0.01$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/W:lambda=1.0,eta0.01}.pdf}
+    \caption{$\lambda=1.0,\eta=0.01$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=1.0,eta0.5}.pdf}
-        \caption{$\lambda=1.0 \eta=0.5$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/W:lambda=1.0,eta0.5}.pdf}
+        \caption{$\lambda=1.0,\eta=0.5$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=1.0,eta1.0}.pdf}
-    \caption{$\lambda=1.0 \eta=1.0$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/W:lambda=1.0,eta1.0}.pdf}
+    \caption{$\lambda=1.0,\eta=1.0$}
   \end{subfigure}
+  \caption{The convex objective (in $W$) at each iteration. The $x$-axis shows each iteration of
+    the an augmented Lagrangian run (internal iteration) and each horizontal line an external iteration. We have not labeled
+    the external iterations to avoid cluster: they are ordered from lowest to highest in town down. }
+      \label{al:W}
+  \end{figure}
+\end{center}
+
+\begin{center}
+  \begin{figure}[h]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/H:lambda=0.01,eta0.01}.pdf}
+    \caption{$\lambda=0.01,\eta=0.01$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/H:lambda=0.01,eta1.0}.pdf}
+    \caption{$\lambda=0.01,\eta=1.0$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/H:lambda=0.5,eta0.1}.pdf}
+    \caption{$\lambda=0.5,\eta=0.1$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/H:lambda=1.0,eta0.01}.pdf}
+    \caption{$\lambda=1.0,\eta=0.01$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/H:lambda=1.0,eta0.5}.pdf}
+        \caption{$\lambda=1.0,\eta=0.5$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/H:lambda=1.0,eta1.0}.pdf}
+    \caption{$\lambda=1.0,\eta=1.0$}
+  \end{subfigure}
+    \caption{The convex objective (in $H$) at each iteration. The $x$-axis shows each iteration of
+    the an augmented Lagrangian run (internal iteration) and each horizontal line an external iteration. We have not labeled
+    the external iterations to avoid cluster: they are ordered from lowest to highest in town down. }
+    \label{al:H}
 \end{figure}
 \end{center}
 
@@ -858,69 +909,38 @@ or the book chapter we applied.
   \begin{figure}[h]
     \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=0.01,eta0.01}.pdf}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/theta:lambda=0.01,eta0.01}.pdf}
     \caption{$\lambda=0.01,\eta=0.01$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=0.01,eta1.0}.pdf}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/theta:lambda=0.01,eta1.0}.pdf}
     \caption{$\lambda=0.01,\eta=1.0$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=0.5,eta0.1}.pdf}
-    \caption{$\lambda=0.5 \eta=0.1$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/theta:lambda=0.5,eta0.1}.pdf}
+    \caption{$\lambda=0.5,\eta=0.1$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=1.0,eta0.01}.pdf}
-    \caption{$\lambda=1.0 \eta=0.01$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/theta:lambda=1.0,eta0.01}.pdf}
+    \caption{$\lambda=1.0,\eta=0.01$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=1.0,eta0.5}.pdf}
-        \caption{$\lambda=1.0 \eta=0.5$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/theta:lambda=1.0,eta0.5}.pdf}
+        \caption{$\lambda=1.0,\eta=0.5$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=1.0,eta1.0}.pdf}
-    \caption{$\lambda=1.0 \eta=1.0$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/theta:lambda=1.0,eta1.0}.pdf}
+    \caption{$\lambda=1.0,\eta=1.0$}
   \end{subfigure}
-\end{figure}
-\end{center}
-
-\begin{center}
-  \begin{figure}[h]
-    \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=0.01,eta0.01}.pdf}
-    \caption{$\lambda=0.01,\eta=0.01$}
-  \end{subfigure}
-  \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=0.01,eta1.0}.pdf}
-    \caption{$\lambda=0.01,\eta=1.0$}
-  \end{subfigure}
-  \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=0.5,eta0.1}.pdf}
-    \caption{$\lambda=0.5 \eta=0.1$}
-  \end{subfigure}
-  \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=1.0,eta0.01}.pdf}
-    \caption{$\lambda=1.0 \eta=0.01$}
-  \end{subfigure}
-  \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=1.0,eta0.5}.pdf}
-        \caption{$\lambda=1.0 \eta=0.5$}
-  \end{subfigure}
-  \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=1.0,eta1.0}.pdf}
-    \caption{$\lambda=1.0 \eta=1.0$}
-  \end{subfigure}
+    \caption{The convex objective (in $\Theta$) at each iteration. The $x$-axis shows each iteration of
+    the an augmented Lagrangian run (internal iteration) and each horizontal line an external iteration. We have not labeled
+    the external iterations to avoid cluster: they are ordered from lowest to highest in town down. }
+    \label{al:theta}
 \end{figure}
 \end{center}
 
