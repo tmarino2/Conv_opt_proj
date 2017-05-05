@@ -402,42 +402,54 @@ or the book chapter we applied.
 \subsubsection{Fixed step size experiment results}
 \red{TODO: clean up}
 
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{fixed-step-alpha.png}
-  \caption{Our objective varying $\alpha$}
-\end{figure}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{fixed-step-lambda.png}
-  \caption{Our objective varying $\lambda$}
-\end{figure}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{fixed-step-eta.png}
-  \caption{Our objective varying $\eta$}
-\end{figure}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{fixed-step-internal-W.png}
-  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $W$}
-\end{figure}
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{fixed-step-internal-H.png}
-  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $H$}
-\end{figure}
-
-k\begin{figure}
-  \includegraphics[width=\textwidth]{fixed-step-internal-Th.png}
-  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $\theta$}
+\begin{figure}[h]
+  \begin{subfigure}[b]{\textwidth}
+    \includegraphics[width=\textwidth]{proj-gradient-fixed-wellb.png}
+    \caption{Projected gradient on experiments with well behaved results}
+  \end{subfigure}
+  \begin{subfigure}[b]{\textwidth}
+    \includegraphics[width=\textwidth]{proj-gradient-fixed-all.png}
+    \caption{Projected gradient on all of our 64 hyperparamteer experiments. (Or as we like to call it, modern art)}
+  \end{subfigure}
+  \caption{Experimental results from fixed step sized for projected gradient decent running $\alpha \in \{0.001, 0.05, 0.1, 0.5\}, \eta \in \{ 0.01, 0.1, 0.5, 1, 10 \}, \lambda \in \{ 0.01, 0.1, 0.5, 1, 10\} $}
 \end{figure}
 
 
-\begin{figure}
-  \includegraphics[width=\textwidth]{fixed-step-all.png}
-  \caption{All steps from alternating minimization problem concatenated together}
-\end{figure}
+%% \begin{figure}
+%%   \includegraphics[width=\textwidth]{fixed-step-alpha.png}
+%%   \caption{Our objective varying $\alpha$}
+%% \end{figure}
+
+%% \begin{figure}
+%%   \includegraphics[width=\textwidth]{fixed-step-lambda.png}
+%%   \caption{Our objective varying $\lambda$}
+%% \end{figure}
+
+%% \begin{figure}
+%%   \includegraphics[width=\textwidth]{fixed-step-eta.png}
+%%   \caption{Our objective varying $\eta$}
+%% \end{figure}
+
+%% \begin{figure}
+%%   \includegraphics[width=\textwidth]{fixed-step-internal-W.png}
+%%   \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $W$}
+%% \end{figure}
+
+%% \begin{figure}
+%%   \includegraphics[width=\textwidth]{fixed-step-internal-H.png}
+%%   \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $H$}
+%% \end{figure}
+
+%% k\begin{figure}
+%%   \includegraphics[width=\textwidth]{fixed-step-internal-Th.png}
+%%   \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $\theta$}
+%% \end{figure}
+
+
+%% \begin{figure}
+%%   \includegraphics[width=\textwidth]{fixed-step-all.png}
+%%   \caption{All steps from alternating minimization problem concatenated together}
+%% \end{figure}
 
 
 \subsection{Decreasing step size}
@@ -454,16 +466,16 @@ In this section we compare the SDA given in lecture slides 4 as \textbf{Algorith
 \subsection{Algorithm and implementation}
 Lower case bold letters denote matrices (contrary to standard convention) and the norm is the Frobenius norm together with the associated standrard inner product for matrices. We follow the pseudo-code given in \textbf{Algorithm 3} in the lecture slides as already stated. The most interesting part of the algorithm is implementing the update $\x_{k+1} \leftarrow \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}\rangle + \frac{\beta_{k+1}}{2}\norm{\x - \x_0}^2$ for problems~\ref{problem_6},\ref{problem_7} and~\ref{problem_8}. The following lemma shows us that this is equivalent to the projection of $x_0 - \frac{1}{\beta_{k+1}}\s_{k+1}$ onto the convex set $\mathcal{X}$.
 \begin{lemma}
-  Solving $\text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}\rangle + \frac{\beta_{k+1}}{2}\norm{\x - \x_0}^2$ is equivalent to solving $\text{arg}\min_{\x\in\mathcal{X}}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2$
+  Solving $\text{\normalfont argmin}_{\x\in\mathcal{X}} \langle \x,\s_{k+1}\rangle + \frac{\beta_{k+1}}{2}\norm{\x - \x_0}^2$ is equivalent to solving $\text{\normalfont argmin}_{\x\in\mathcal{X}}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2$
 \end{lemma}
 \begin{proof}
   \begin{equation}
     \begin{aligned}
-      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}\rangle + \frac{\beta_{k+1}}{2}\norm{\x - \x_0}^2 =\\
-      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1} - \beta_{k+1}\x_0\rangle + \frac{\beta_{k+1}}{2}\norm{\x}^2 =\\
-      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}- \beta_{k+1}\x_0\rangle + \frac{\beta_{k+1}}{2}\norm{\x }^2 + \frac{1}{2\beta_{k+1}}\norm{\s_{k+1} - \beta_{k+1}\x_0}^2 =\\
-      \text{arg}\min_{\x\in\mathcal{X}}\frac{\beta_{k+1}}{2}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2 =\\
-      \text{arg}\min_{\x\in\mathcal{X}}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2
+      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}\rangle + \frac{\beta_{k+1}}{2}\norm{\x - \x_0}^2 = &\\
+      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1} - \beta_{k+1}\x_0\rangle + \frac{\beta_{k+1}}{2}\norm{\x}^2 = &\\
+      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}- \beta_{k+1}\x_0\rangle + \frac{\beta_{k+1}}{2}\norm{\x }^2 + \frac{1}{2\beta_{k+1}}\norm{\s_{k+1} - \beta_{k+1}\x_0}^2 = &\\
+      \text{arg}\min_{\x\in\mathcal{X}}\frac{\beta_{k+1}}{2}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2 = &\\
+      \text{arg}\min_{\x\in\mathcal{X}}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2 \;\;\;\; &
     \end{aligned}
   \end{equation}
 \end{proof}
@@ -472,8 +484,8 @@ For the set $\mathcal{X} := \{\x_{i,j} \geq 0\}$ it is easy to verify that the s
   \mathcal{P}(\x)_{i,j} = \begin{cases}
     \x_{i,j} & \x_{i,j} \geq 0\\
     0 &\text{otherwise}
-    \end{cases}
-\end{equation*}.
+    \end{cases}.
+\end{equation*}
 A simple way to see this is to form the Lagrangian $\mathcal{L}(\x,\y)$ for $\min_{\x\in\mathcal{X}}\frac{1}{2}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2$ and notice that the pair $(\mathcal{P}(\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1}),\y^*)$ satisfies KKT conditions. Here $\y^*$ is given by
 \begin{equation*}
   \y^*_{i,j} = \begin{cases}
