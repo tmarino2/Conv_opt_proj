@@ -285,7 +285,7 @@ If $f$ denotes the respective objective of problems~\ref{problem_6},\ref{problem
 where $\odot$ denotes the Hadamard product and ``sign'' is the sign function applied element wise to $\Theta$. The derivation in~\ref{subgrad_7} holds because $\Theta$ is always constraint to be a diagonal matrix.
 \section{Projected Gradient Descent}
 \subsection{Fixed step size}
-\red{TODO: include experiments and comment on comparison with the theory}
+%\red{TODO: include experiments and comment on comparison with the theory}
 \par
 For this part of the project a modified version of \textbf{Algorithm 1} from lecture slides $4$ is used with different choices of fixed step size $\alpha_k$. The difference with the algorithm given in lecture 4 is the stopping criteria -- as already discussed in class checking if the norm of the gradient is close to $0$ will not work well for objectives including $l_1$ penalty term, instead we choose to stop our procedure either after a fixed number of steps (in our experiments this is 200 when solving problems~\ref{problem_6} and \ref{problem_7} and 500 when solving problem~\ref{problem_8}) or if the distance between consecutive iterates becomes less than $\epsilon$ (where $\epsilon \in [10^{-4},10^{-5}]$). As discussed in class this is usually not a good stopping criteria unless the objective is differentiable with $L$-Lipschitz continuous derivatives. Luckily both the objectives in~\ref{problem_6} and~\ref{problem_8} are differentiable with Lipschitz continuous gradients which we show now.
 \begin{lemma}\label{lem:lipsch_w}
@@ -314,7 +314,7 @@ Theorem 1.8 in lecture slides 4 now characterizes the linear convergence rate to
 
 \subsubsection{Fixed step size experiment results}
 %
-All of our experiments are ran on a matrix $\X \in \mathbb{R}^{40\times 5000}$ constructed by sampling $\W \in \mathbb{R}^{40\times 40}, \Theta \in \mathbb{R}^{40\times 40}$ and $\H \in \mathbb{R}^{40\times 5000}$ from standard Gaussian and then thresholding so each of the matrices have non-negative entries. We also only keep the diagonal entries of $\Theta$ and finally set $\X := \W\Theta\H$. The number of non-zero entries in $\Theta$ is 18. We note that this is not the best construction of $\X$ we could have come up since neither $\Theta$ is very sparse nore is there any smoothness constraints on the columns of $\W$. Thus as it is about to be shown the optimal solutions the the variants parametrized by $\eta$ and $\lambda$ of problem~\ref{problem_5} we solve are not going to be close (in the sense of Frobenius norm) to the factors from which $\X$ was constructed. In fact for various settings of $\lambda$ and $\eta$ we achieve much better performance on the overall objective of~\ref{problem_5} than the original $\W,\Theta$ and $\H$ factors from which $\X$ was constructed. Our initializations for each of the tests is done in the same way the original factors of $\X$ were constructed. While this is by no means a good initialization we still see roughly the same performance of all of the methods we use for solving the sub-problems in~\ref{problem_5} so initialization does not seem to play a major role in the final performance. We have performed several different experiments specifically for the projected gradient descent method with both increasing and decreasing step size. We begin by running each of the projected gradient descent algorithms on the separate optimization problems for $200$ iterations when solving~\ref{problem_6} and~\ref{problem_7} and $500$ iterations when solving~\ref{problem_8}. Each of these are ran a total of $250$ times in the outer most loop of the alternating minimization algorithm. The respective plots are only given for every $10$ iterations of the internal PGD loop. The parameters which yielded the smallest overall objective were $\lambda = 0.01$, $\eta = 0.01$ and $\alpha = 0.001$ was $54.1$. This is no surprise as because $\X$ was not constructed with factors taking into account the smoothness and sparsity penalties when these penalties are enforced the least we should get the smallest loss. We chose to run the internal minimization projected gradient descent algorithm for only $200/500$ iterations as the number of different values of $\lambda,\eta$ and initial step size $\alpha$ we try together with the $200$ iterations of the outer loop take quite a bit of time. The overall objective results can be seen in figure~\ref{PGD_overall}. The number of non-zero entrie sof the obtained $\Theta$ was $21$. 
+All of our experiments are ran on a matrix $\X \in \mathbb{R}^{40\times 5000}$ constructed by sampling $\W \in \mathbb{R}^{40\times 40}, \Theta \in \mathbb{R}^{40\times 40}$ and $\H \in \mathbb{R}^{40\times 5000}$ from standard Gaussian and then thresholding so each of the matrices have non-negative entries. We also only keep the diagonal entries of $\Theta$ and finally set $\X := \W\Theta\H$. The number of non-zero entries in $\Theta$ is 18. We note that this is not the best construction of $\X$ we could have come up since neither $\Theta$ is very sparse nore is there any smoothness constraints on the columns of $\W$. Thus as it is about to be shown the optimal solutions the the variants parametrized by $\eta$ and $\lambda$ of problem~\ref{problem_5} we solve are not going to be close (in the sense of Frobenius norm) to the factors from which $\X$ was constructed. In fact for various settings of $\lambda$ and $\eta$ we achieve much better performance on the overall objective of~\ref{problem_5} than the original $\W,\Theta$ and $\H$ factors from which $\X$ was constructed. Our initializations for each of the tests is done in the same way the original factors of $\X$ were constructed. While this is by no means a good initialization we still see roughly the same performance of all of the methods we use for solving the sub-problems in~\ref{problem_5} so initialization does not seem to play a major role in the final performance. We have performed several different experiments specifically for the projected gradient descent method with both increasing and decreasing step size. We begin by running each of the projected gradient descent algorithms on the separate optimization problems for $200$ iterations when solving~\ref{problem_6} and~\ref{problem_7} and $500$ iterations when solving~\ref{problem_8}. Each of these are ran a total of $250$ times in the outer most loop of the alternating minimization algorithm. The respective plots are only given for every $10$ iterations of the internal PGD loop. The parameters which yielded the smallest overall objective were $\lambda = 0.01$, $\eta = 0.01$ and $\alpha = 0.001$ was $54.1$. This is no surprise as because $\X$ was not constructed with factors taking into account the smoothness and sparsity penalties when these penalties are enforced the least we should get the smallest loss. We chose to run the internal minimization projected gradient descent algorithm for only $200/500$ iterations as the number of different values of $\lambda,\eta$ and initial step size $\alpha$ we try together with the $200$ iterations of the outer loop take quite a bit of time. The overall objective results can be seen in figure~\ref{PGD_overall}. The number of non-zero entrie sof the obtained $\Theta$ was $21$.
 \begin{figure}[H]
   \begin{subfigure}[b]{\textwidth}
     \includegraphics[width=\textwidth]{proj-gradient-fixed-wellb.png}
@@ -403,7 +403,7 @@ We briefly comment on what is observed -- first the objective between each call 
 
   \caption{Plots of $W, H, \Theta$ optimized on the first and last 10 iterations of projected gradient decent with different values of $\alpha$ for each sub problem}
   \end{figure}
-  
+
 \begin{figure}[H]
   %\begin{subfigure}[b]{0.3\textwidth}
     \includegraphics[width=\textwidth]{PGD_vary_mult5000.png}
@@ -951,45 +951,44 @@ also has very few tunable parameters, e.g., a learning rate, so it requires less
 \end{center}
 
 
-\section{OTHER STUFF MOVE THIS}
+% this was moved above
+%% \section{OTHER STUFF MOVE THIS}
+%% \begin{figure}[H]
+%%   %\begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha.png}
+%%     \caption{Overall objective for changing the alpha between different suboptimization problems}
+%%   %\end{subfigure}
+%% \end{figure}
+%%   \begin{figure}[H]
+%%     \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-H-first.png}
+%%   \end{subfigure}
+%% \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-H-last.png}
+%%   \end{subfigure}
+%% \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-W-first.png}
+%%   \end{subfigure}
+%% \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-W-last.png}
+%%   \end{subfigure}
+%% \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-Th-first.png}
+%%   \end{subfigure}
+%% \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-Th-last.png}
+%%   \end{subfigure}
 
+%%   \caption{Plots of $W, H, \Theta$ optimized on the first and last 10 iterations of projected gradient decent with different values of $\alpha$ for each sub problem}
+%%   \end{figure}
 
-\begin{figure}[H]
-  %\begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[width=\textwidth]{fixed-step-change-alpha.png}
-    \caption{Overall objective for changing the alpha between different suboptimization problems}
-  %\end{subfigure}
-\end{figure}
-  \begin{figure}[H]
-    \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[width=\textwidth]{fixed-step-change-alpha-H-first.png}
-  \end{subfigure}
-\centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[width=\textwidth]{fixed-step-change-alpha-H-last.png}
-  \end{subfigure}
-\centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[width=\textwidth]{fixed-step-change-alpha-W-first.png}
-  \end{subfigure}
-\centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[width=\textwidth]{fixed-step-change-alpha-W-last.png}
-  \end{subfigure}
-\centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[width=\textwidth]{fixed-step-change-alpha-Th-first.png}
-  \end{subfigure}
-\centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[width=\textwidth]{fixed-step-change-alpha-Th-last.png}
-  \end{subfigure}
-
-  \caption{Plots of $W, H, \Theta$ optimized on the first and last 10 iterations of projected gradient decent with different values of $\alpha$ for each sub problem}
-  \end{figure}
-
-
+\newpage
 \bibliographystyle{plain}
 \bibliography{mybibfile}
 \end{document}
