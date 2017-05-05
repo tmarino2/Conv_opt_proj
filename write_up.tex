@@ -344,7 +344,7 @@ of Birgin (2014) \cite{birgin2014practical}.
     \STATE $k \gets 0$
     \WHILE{$\norm{\W_{t-1}\H_{t-1}\Theta_{t-1} - \W_t\H_t\Theta_t}_F^2>\epsilon$}
     %% \STATE {\em STEP 1: Unconstrained Minimization}
-    \FOR{$k = 1,..,10$}
+    \FOR{$k = 1,\ldots,K$}
       \STATE{$W_{t+1} := \underset{{W \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W\Theta_t\H_t}_F^2 + \eta\sum_{i,j}\left(\W_{i,j} - \W_{i+1,j}\right)^2 + \sum_{i,j} \max\left(0, -W_{ij} + \frac{\mu^k_{ij}}{\rho^k}\right)^2}$}
       \STATE $\mu_{ij} ^{k+1} \gets \left[\mu_{ij}^k - \rho_k W_{ij}\right]_{+}$, $\forall i, j$
       \STATE $V_{ij}^{\mu^k} = \min\left\{ W_{ij}, \mu_{ij}^k / \rho^k\right\}$, $\forall i, j$
@@ -352,7 +352,7 @@ of Birgin (2014) \cite{birgin2014practical}.
     \ENDFOR
     \STATE{$W_{t+1} = \mathbf{Proj}_{\ge 0}(W_{t+1})$}
 
-    \FOR{$k = 1,..,10$}
+    \FOR{$k = 1,\ldots,K$}
       \STATE{$H_{t+1} := \underset{{H \in \mathbb{R}^{d \times n}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W_{t+1}\Theta_t\H}_F^2 + \sum_{i,j} \max\left(0, -H_{ij} + \frac{\eta_{ij}}{\rho^k}\right)^2}$}
       \STATE $\eta_{ij}^{k+1} \gets \left[\eta_{ij}^k - \rho_k H_{ij}\right]_{+}$, $\forall i, j$
       \STATE $V_{ij}^{\nu^k} = \min\left\{ H_{ij}, \nu_{ij}^k / \rho^k\right\}$, $\forall i, j$
@@ -361,7 +361,7 @@ of Birgin (2014) \cite{birgin2014practical}.
     \STATE{$H_{t+1} = \mathbf{Proj}_{\ge 0}(H_{t+1})$}
 
 
-    \FOR{$k = 1,..,10$}
+    \FOR{$k = 1,\ldots,K$}
       \STATE{$\Theta_{t+1} := \underset{{\Theta \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W_{t+1}\Theta\H_{t+1}}_F^2 + \lambda ||\Theta||_1  + \sum_{i} \max\left(0, -\Theta_{ii} + \frac{\xi^{k}_{i}}{\rho^k}\right)^2}$}
       \STATE $\xi_{i}^{k+1} \gets \left[xi_{i}^k - \rho_k \Theta_{ii}\right]_{+}$, $\forall i$
       \STATE $\nu_{ij}^{k+1} = \Pi_{\nu^k_{ij}}\left([0, \nu_{\text{max}}] \right)$, $\forall i, j$
@@ -381,8 +381,8 @@ of Birgin (2014) \cite{birgin2014practical}.
 \end{algorithm}
 
 We perform the unconstrained optimization in
-Algorithm\~ref{alg:augmented-lagrangian} with L-BFGS
-\cite{liu1989limited}, using the standard SciPy implementation. To
+Algorithm~\ref{alg:augmented-lagrangian} with L-BFGS
+\cite{liu1989limited}, using the standard SciPy implementation. We set $\mu_\text{max}, \nu_\text{max}, \xi_\text{max}$ to 100. To
 handle the $L_1$ penalty of $\Theta$, new use the projection L-BFGS
 method described in Schmidt 2009 \cite{schmidt2009optimization}.  We chose
 L-BFGS because it was best available blackbox (assuming to access to a
