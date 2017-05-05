@@ -314,6 +314,7 @@ Theorem 1.8 in lecture slides 4 now characterizes the linear convergence rate to
 
 \subsubsection{Fixed step size experiment results}
 %
+All of our experiments are ran on a matrix $\X \in \mathbb{R}^{40\times 5000}$ constructed by sampling $\W \in \mathbb{R}^{40\times 40}, \Theta \in \mathbb{R}^{40\times 40}$ and $\H \in \mathbb{R}^{40\times 5000}$ from standard Gaussian and then thresholding so each of the matrices have non-negative entries. We also only keep the diagonal entries of $\Theta$ and finally set $\X := \W\Theta\H$. The number of non-zero entries in $\Theta$ is 18. We note that this is not the best construction of $\X$ we could have come up since neither $\Theta$ is very sparse nore is there any smoothness constraints on the columns of $\W$. Thus as it is about to be shown the optimal solutions the the variants parametrized by $\eta$ and $\lambda$ of problem~\ref{problem_5} we solve are not going to be close (in the sense of Frobenius norm) to the factors from which $\X$ was constructed. In fact for various settings of $\lambda$ and $\eta$ we achieve much better performance on the overall objective of~\ref{problem_5} than the original $\W,\Theta$ and $\H$ factors from which $\X$ was constructed. Our initializations for each of the tests is done in the same way the original factors of $\X$ were constructed. While this is by no means a good initialization we still see roughly the same performance of all of the methods we use for solving the sub-problems in~\ref{problem_5} so initialization does not seem to play a major role in the final performance. We have performed several different experiments specifically for the projected gradient descent method with both increasing and decreasing step size. We begin by running each of the projected gradient descent algorithms on the separate optimization problems for $200$ iterations when solving~\ref{problem_6} and~\ref{problem_7} and $500$ iterations when solving~\ref{problem_8}. Each of these are ran a total of $250$ times in the outer most loop of the alternating minimization algorithm. The parameters which yielded the smallest overall objective were $\lambda = 0.01$, $\eta = 0.01$ and $\alpha = 0.001$ was $54.1$. This is no surprise as because $\X$ was not constructed with factors taking into account the smoothness and sparsity penalties when these penalties are enforced the least we should get the smallest loss. We chose to run the internal minimization projected gradient descent algorithm for only $200/500$ iterations as the number of different values of $\lambda,\eta$ and initial step size $\alpha$ we try together with the $200$ iterations of the outer loop take quite a bit of time. The overall objective results can be seen in figure~\ref{PGD_overall}. The number of non-zero entrie sof the obtained $\Theta$ was $21$. 
 \begin{figure}[H]
   \begin{subfigure}[b]{\textwidth}
     \includegraphics[width=\textwidth]{proj-gradient-fixed-wellb.png}
@@ -334,9 +335,110 @@ $\eta$ and $\lambda$ to small ($0.01$) values.  This is expected since these
 behave as reguralarization on the matrices which we are able to find.
 Additionally, we note again that for $\lambda = \eta = 0$ we kown that there
 exists an exact solution to this problem.}
+  \label{PGD_overall}
 \end{figure}
+Next we are going to plot the internal objective values for several different runs of projected gradient descent for each of the problems which optimize over $\H$,$\Theta$ and $\W$ individually. We are going to restrict all our plots for the projected gradient descent section to the parameters which obtained the smallest overall objective on the experiments ran above. This is done since there are just too many combinations of parameters to plot for the number of different experiments we ran and there is no feasible way to choose meaningful results to present as most of the reasonable plots look very similar to each other. The detailed plots for $\H$,$\Theta$ and $\W$ can be found in figure~\ref{fig:PGD_detailed_fix}
+%% \begin{center}
+%%   \begin{figure}[H]
+%%     \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[scale=0.12]{{pgd_fixed_W}.png}
+%%   \end{subfigure}
+%%   \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[scale=0.12]{{pgd_fixed_Th}.png}
+%%   \end{subfigure}
+%%   \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[scale=0.12]{{pgd_fixed_H}.png}
+%%   \end{subfigure}
+%%   \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[scale=0.12]{{pgd_fixed_Wlast}.png}
+%%   \end{subfigure}
+%%   \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[scale=0.12]{{pgd_fixed_Thlast}.png}
+%%   \end{subfigure}
+%%   \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[scale=0.12]{{pgd_fixed_Hlast}.png}
+%%   \end{subfigure}
+%%   \caption{Detailed plots for each call to PGD with fixed step size for~\ref{problem_6},\ref{problem_7} and~\ref{problem_8}}
+%%   \label{fig:PGD_detailed_fix}
+%%   \end{figure}
+%% \end{center}
+We briefly comment on what is observed -- first the objective between each call to PGD never increases which is very unexpected. This basically implies that the overall objective is always decreasing with every step of the suboptimization procedures. Secondly the behavior of the objectives for $\W$ and $\Theta$ is somewhat expected as both first decrease rapidly and at the final calls almost don't change. The more surprising observation referencing back to our theory discussion is the convergence rate for $\Theta$. Since the objective is strongly convex we know that we should have linear convergence to a local neighbourhood of the optimal solution. The plots do not show this, in fact it seems that the objective for $\W$ converges quicker. Our final observation is that the objective for $\H$ does not change almost at all. We conjecture that this is dew to poor step size choice and that a step-size different step size choices for PGD applied to each of the 3 optimization sub-routines should fix the problem. Thus these are the next experiments we run. A final comment is that another interesting experiment to run would be to decrease the number of outer most loops of the alternating minimization procedure and increase the number innner loops for PGD for each problem so that the total number of iterations does not change and see if we observe the same overall objective. The next experiments we present something in between -- we multiply the step-size $\alpha$ by $10/100$ when doing PGD on the objective for $\H$ and $0.1/0.01$ for $\Theta$. We also increase the number of iterations to $1000$ and $5000$, however, the iterations of the outer most loop are kept to $200$.
+\begin{figure}[H]
+  %\begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha.png}
+    \caption{Overall objective for changing the alpha between different suboptimization problems (10 and 0.1)}
+  %\end{subfigure}
+\end{figure}
+  \begin{figure}[H]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-H-first.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-H-last.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-W-first.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-W-last.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-Th-first.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-Th-last.png}
+  \end{subfigure}
 
+  \caption{Plots of $W, H, \Theta$ optimized on the first and last 10 iterations of projected gradient decent with different values of $\alpha$ for each sub problem}
+  \end{figure}
+  
+%% \begin{figure}[H]
+%%   %\begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[width=\textwidth]{PGD_vary_mult5000.png}
+%%     \caption{Overall objective for changing the alpha between different suboptimization problems (100 and 0.01)}
+%%   %\end{subfigure}
+%% \end{figure}
+%% \begin{figure}[H]
+%%     \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-H100.png}
+%%   \end{subfigure}
+%% \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-H100last.png}
+%%   \end{subfigure}
+%% \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-W100.png}
+%%   \end{subfigure}
+%% \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-W100last.png}
+%%   \end{subfigure}
+%% \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-Th100.png}
+%%   \end{subfigure}
+%% \centering
+%%   \begin{subfigure}[b]{0.3\textwidth}
+%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-Th100last.png}
+%%   \end{subfigure}
 
+%%   \caption{Plots of $W, H, \Theta$ optimized on the first and last 10 iterations of projected gradient decent with different values of $\alpha$ for each sub problem}
+%% \end{figure}
+%% The lowest objective value for~\ref{problem_5} we get when running the $5000$ itertations per suboptimization problem with rescaling factors $10$ and $0.1$ is $2.31$ and with rescaling factors $100$ and $0.01$ is $1.985$. As we can see both the rescaling and not keeping step-size constant across optimization problems helps with improving the objective significantly. The sparsity for $\Theta$ was 16. We also ran the same experiment with $1000$ iterations per suboptimization problem and the best overall objective we founds for rescaling factors $10$ and $0.1$ was $55.49$ and for rescaling factors $100$ and $0.01$ was $8.7182$ with sparsity for $\Theta$ 17. We conclude that changing the step size significantly improves the quality of the best solution overall for the objective in~\ref{problem_5}. We also ran an experiment where we stopped each of the PGD algorithms after distance between consecutive iterates became smaller than $5*10^{-5}$. The best objective value we found was $54.8$ and the sparsity of $\Theta$ was 21.
 
 %% \begin{figure}
 %%   \includegraphics[width=\textwidth]{fixed-step-alpha.png}
@@ -693,12 +795,13 @@ of Birgin (2014) \cite{birgin2014practical}.
 
 We perform the unconstrained optimization in
 Algorithm~\ref{alg:augmented-lagrangian} with L-BFGS
-\cite{liu1989limited}, using the standard SciPy implementation. We set $\mu_\text{max}, \nu_\text{max}, \xi_\text{max}$ to 100. To
+\cite{liu1989limited}, using the standard SciPy implementation. We set $\mu_\text{max}, \nu_\text{max}, \xi_\text{max}$ to 100. We
+note that the function $\max(0, \cdot)^2$ is differentiable in $x$. To
 handle the $L_1$ penalty of $\Theta$, we use the projected L-BFGS
 method described in Schmidt 2009 \cite{schmidt2009optimization}.  We chose
 L-BFGS because it was best available blackbox (assuming to access to a
 gradient) in SciPy. Each internal iteration of L-BFGS was run to convergence,
-which is described great detail at \url{https://docs.scipy.org/doc/scipy-0.19.0/reference/generated/scipy.optimize.fmin_l_bfgs_b.html}.
+which is described in  great detail at \url{https://docs.scipy.org/doc/scipy-0.19.0/reference/generated/scipy.optimize.fmin_l_bfgs_b.html}.
 
 \subsection{Theory}
 Our augmented Lagrangian method differs from the one presented in
@@ -711,44 +814,93 @@ or the book chapter we applied.
 
 
 \subsection{Experiments}
+We run the augmented Lagrangian block coordinate descent for 300 iterations since convergence is apparent.
+This algorithm achieves the loss values on the objective ($\approx 0.41$). We attribute this algorithm's speed
+and success to the internal calls to the second-order optimization algorithm L-BFGS to solve the subproblems
+with each augmented Lagrangian run. The Figures~\ref{al:W},~\ref{al:H},~\ref{al:theta} show that each individual
+augmented Lagrangian problem is solved relatively quickly. For speed, we run each algorithm for a maximum of 50 iterations,
+and we observe that for each problem, we appear to converge well before then. 
 
 \begin{figure}
   \includegraphics[width=\textwidth]{augmented-lagrangian/plots/objective.pdf}
-  \caption{Our objective varying with different $\lambda$ and $\eta$ values.}
+  \caption{Our objective optimized with Augmented Lagrangian varying with different $\lambda$ and $\eta$ values.}
 \end{figure}
 
 \begin{center}
   \begin{figure}[h]
     \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=0.01,eta0.01}.pdf}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/W:lambda=0.01,eta0.01}.pdf}
     \caption{$\lambda=0.01,\eta=0.01$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=0.01,eta1.0}.pdf}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/W:lambda=0.01,eta1.0}.pdf}
     \caption{$\lambda=0.01,\eta=1.0$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=0.5,eta0.1}.pdf}
-    \caption{$\lambda=0.5 \eta=0.1$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/W:lambda=0.5,eta0.1}.pdf}
+    \caption{$\lambda=0.5,\eta=0.1$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=1.0,eta0.01}.pdf}
-    \caption{$\lambda=1.0 \eta=0.01$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/W:lambda=1.0,eta0.01}.pdf}
+    \caption{$\lambda=1.0,\eta=0.01$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=1.0,eta0.5}.pdf}
-        \caption{$\lambda=1.0 \eta=0.5$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/W:lambda=1.0,eta0.5}.pdf}
+        \caption{$\lambda=1.0,\eta=0.5$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=1.0,eta1.0}.pdf}
-    \caption{$\lambda=1.0 \eta=1.0$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/W:lambda=1.0,eta1.0}.pdf}
+    \caption{$\lambda=1.0,\eta=1.0$}
   \end{subfigure}
+  \caption{The convex objective (in $W$) at each iteration. The $x$-axis shows each iteration of
+    the an augmented Lagrangian run (internal iteration) and each horizontal line an external iteration. We have not labeled
+    the external iterations to avoid cluster: they are ordered from lowest to highest in town down. }
+      \label{al:W}
+  \end{figure}
+\end{center}
+
+\begin{center}
+  \begin{figure}[h]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/H:lambda=0.01,eta0.01}.pdf}
+    \caption{$\lambda=0.01,\eta=0.01$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/H:lambda=0.01,eta1.0}.pdf}
+    \caption{$\lambda=0.01,\eta=1.0$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/H:lambda=0.5,eta0.1}.pdf}
+    \caption{$\lambda=0.5,\eta=0.1$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/H:lambda=1.0,eta0.01}.pdf}
+    \caption{$\lambda=1.0,\eta=0.01$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/H:lambda=1.0,eta0.5}.pdf}
+        \caption{$\lambda=1.0,\eta=0.5$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/H:lambda=1.0,eta1.0}.pdf}
+    \caption{$\lambda=1.0,\eta=1.0$}
+  \end{subfigure}
+    \caption{The convex objective (in $H$) at each iteration. The $x$-axis shows each iteration of
+    the an augmented Lagrangian run (internal iteration) and each horizontal line an external iteration. We have not labeled
+    the external iterations to avoid cluster: they are ordered from lowest to highest in town down. }
+    \label{al:H}
 \end{figure}
 \end{center}
 
@@ -756,69 +908,38 @@ or the book chapter we applied.
   \begin{figure}[h]
     \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=0.01,eta0.01}.pdf}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/theta:lambda=0.01,eta0.01}.pdf}
     \caption{$\lambda=0.01,\eta=0.01$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=0.01,eta1.0}.pdf}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/theta:lambda=0.01,eta1.0}.pdf}
     \caption{$\lambda=0.01,\eta=1.0$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=0.5,eta0.1}.pdf}
-    \caption{$\lambda=0.5 \eta=0.1$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/theta:lambda=0.5,eta0.1}.pdf}
+    \caption{$\lambda=0.5,\eta=0.1$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=1.0,eta0.01}.pdf}
-    \caption{$\lambda=1.0 \eta=0.01$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/theta:lambda=1.0,eta0.01}.pdf}
+    \caption{$\lambda=1.0,\eta=0.01$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=1.0,eta0.5}.pdf}
-        \caption{$\lambda=1.0 \eta=0.5$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/theta:lambda=1.0,eta0.5}.pdf}
+        \caption{$\lambda=1.0,\eta=0.5$}
   \end{subfigure}
   \centering
   \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=1.0,eta1.0}.pdf}
-    \caption{$\lambda=1.0 \eta=1.0$}
+    \includegraphics[scale=0.3]{{augmented-lagrangian/plots/theta:lambda=1.0,eta1.0}.pdf}
+    \caption{$\lambda=1.0,\eta=1.0$}
   \end{subfigure}
-\end{figure}
-\end{center}
-
-\begin{center}
-  \begin{figure}[h]
-    \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=0.01,eta0.01}.pdf}
-    \caption{$\lambda=0.01,\eta=0.01$}
-  \end{subfigure}
-  \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=0.01,eta1.0}.pdf}
-    \caption{$\lambda=0.01,\eta=1.0$}
-  \end{subfigure}
-  \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=0.5,eta0.1}.pdf}
-    \caption{$\lambda=0.5 \eta=0.1$}
-  \end{subfigure}
-  \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=1.0,eta0.01}.pdf}
-    \caption{$\lambda=1.0 \eta=0.01$}
-  \end{subfigure}
-  \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=1.0,eta0.5}.pdf}
-        \caption{$\lambda=1.0 \eta=0.5$}
-  \end{subfigure}
-  \centering
-  \begin{subfigure}[b]{0.3\textwidth}
-    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=1.0,eta1.0}.pdf}
-    \caption{$\lambda=1.0 \eta=1.0$}
-  \end{subfigure}
+    \caption{The convex objective (in $\Theta$) at each iteration. The $x$-axis shows each iteration of
+    the an augmented Lagrangian run (internal iteration) and each horizontal line an external iteration. We have not labeled
+    the external iterations to avoid cluster: they are ordered from lowest to highest in town down. }
+    \label{al:theta}
 \end{figure}
 \end{center}
 
