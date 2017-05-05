@@ -375,6 +375,15 @@ L-BFGS because it was best available blackbox (assuming to access to a
 gradient) in SciPy. Each internal iteration of L-BFGS was run to convergence,
 which is described great detail at \url{https://docs.scipy.org/doc/scipy-0.19.0/reference/generated/scipy.optimize.fmin_l_bfgs_b.html}.
 
+\subsection{Theory}
+Our augmented Lagrangian method differs from the one presented in
+class due to the presence of the {\em inequality}
+constraints. However, the general idea is the same. By Theorem 4.1 in
+\newcite{birgin2014practical}, we are guaranteed that the algorithm
+generates as a convergence sequence, assuming a compact
+feasible set. Convergence rates for augmented Lagrangian were not discussed in either the class slides
+or the book chapter we applied.
+
 
 
 \subsubsection{Fixed step size experiment results}
@@ -499,7 +508,6 @@ We see that the smallest objective is obtained at $\eta= 0.01,\lambda= 0.01$ -- 
   \end{subfigure}
 \end{figure}
 \end{center}
-\section{Augmented Lagrangian}
 
 
 \red{TODO}
