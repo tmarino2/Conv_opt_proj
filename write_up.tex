@@ -646,6 +646,7 @@ Finally in figure~\ref{fig:SDA_W} we show how the objective changes when solving
 Even though we manage to get good performance in terms of convergence (compared to our best overall result) we still only use a small amount of iterations when solving each of the problems~\ref{problem_6},\ref{problem_7},\ref{problem_8} so we have no guarantees to be close to the optimal solution. To address this problem we run another two experiments in which the the number of iterations each SDA is ran for is $1000$ and $5000$. The number of iterations for the outer-most loop of the alternating optimization algorithm is still $250$. We only run these experiments for $\eta = 0.01$ and $\lambda = 0.01$ as they are very time-consuming.
 \begin{center}
   \begin{figure}[H]
+    \centering
     \includegraphics[scale = 0.3]{{SDA_overall1000}.png}
     \caption{Overall objective when SDA is ran for $1000$ iterations.}
     \label{fig:SDA_1000}
@@ -685,6 +686,7 @@ The overall objective when SDA is ran for $1000$ iterations at each step is plot
 All the plots look very similar to the ones where SDA is only ran for $200$ iterations in terms of how quickly the objective converges. The main difference seems to stem from the fact that after each individual call to SDA with $1000$ iterations the obtained solution has a slightly lower objective value compared to the SDA with $200$ iterations. These differences seem to diminish over the course of the $250$ iterations of the outer most loop and we conjecture that if we ran the outer loop for more than $250$ we would get about the same results. Comparing the run-time of both SDA with $200$ iterations and SDA with $1000$ iterations the gain is almost insignificant. We do not expect running SDA for $5000$ iterations per optimization problem is going to perform much better. The plots containing the experiments in which SDA is ran for $5000$ iterations can be seen in figures~\ref{fig:SDA_5000} and~\ref{fig:SDA_WTH5000}. The best value we get for the overall objective is $2.0425$.
 \begin{center}
   \begin{figure}[H]
+    \centering
     \includegraphics[scale = 0.3]{{SDA_overall5000}.png}
     \caption{Overall objective when SDA is ran for $5000$ iterations.}
     \label{fig:SDA_5000}
@@ -725,6 +727,7 @@ For a final experiment on stopping criteria we ran SDA stopping the algorithm if
 To conclude this section -- we did not observe anything unexpected considering theory of convergence of SDA. The most surprising results were in the convergence speed of $\Theta$ but this can still be explained by the smaller distance between initialization and optimal $\Theta$ and smaller norm of the gradients for the objective. We also observed that for $\Theta$ and at later iterations of the alternating minimization procedure for $\W$ that a lot of computational work is wasted as each optimization subproblem starts almost at the same objective value as the previous.
 \begin{center}
   \begin{figure}[H]
+    \centering
     \includegraphics[scale = 0.3]{{SDA_overall_early}.png}
     \caption{Overall objective when SDA is stopped after small difference in iterates}
     \label{fig:SDA_STOP}
