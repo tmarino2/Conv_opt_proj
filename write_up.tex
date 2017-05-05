@@ -488,7 +488,7 @@ k\begin{figure}
 None of the convergence results in lecture slides 6 hold any longer for projected subgradient descent with decreasing step size. However, we can still characterize the convergence in terms of objective and iterates for step size decreasing as $\frac{1}{t}$. From Theorem 1.11 in lecture slides 4 we know that the iterates for projected gradient descent for problems~\ref{problem_6},\ref{problem_7} and \ref{problem_8} will converge to an optimal point (given such exists). For~\ref{problem_6} and~\ref{problem_8} we can use Lemma 1.3 in lecture slides 6 to show that this would imply convergence in objective. From Lemma 1.3 in lecture slides 6 we know that if $f$ has an L-Lipschitz continuous gradient we have $f(x_k) - f(x^*) \leq \langle\nabla f(x^*)(x_k-x^*)\rangle + \frac{L}{2}\norm{x_k-x^*}^2$. Using Cauchy-Schwartz inequality we have $\nabla f(x^*)^\top (x_k-x^*) \leq \norm{\nabla f(x^*)}\norm{x_k-x^*}$ thus $f(x_k) - f(x^*) \leq \norm{x_k-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right)$ and since $\norm{\nabla f(x^*)}$ is bounded this shows convergence in objective. By triangle inequality we have $\norm{x_k-x^*} \leq \norm{x_k-x_{k+1}} + \norm{x_{k+1} - x^*}$ and thus $f(x_k) - f(x^*) \leq \norm{x_k-x_{k+1}}(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}) + \norm{x_{k+1}-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right) \leq \norm{x_k-x_{k+1}}c_1 + \tilde{\epsilon}$ where $c_1 = \norm{\nabla f(x^*)}  + \frac{L}{2}\norm{x_k-x^*}$ and $\tilde{\epsilon} = \norm{x_{k+1}-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right)$. Clearly for $k$ large enough $\tilde{\epsilon}$ is as small as we would like and $c_1$ is bounded thus for $k$ large enough $\norm{x_{k+1} - x_k} < \epsilon$ implies $f(x_k) - f(x^*)$ is small. This should somewhat justify our stopping criteria for~\ref{problem_6} and~\ref{problem_8}. None of the above derivations, however, hold for~\ref{problem_7} in fact the only thing we can argue is that the iterates $\Theta_k$ are going to converge to $\Theta^*$. This is quite disappointing compared to the results we were able to obtain for a constant step size. In practice as we can see from the experiments we still get satisfactory results.
 
 \subsubsection{Decreasing step size experiment results}
-We run the same experiments for decreasing step size as we did for fixed step size.
+We run the same experiments for decreasing step size as we did for fixed step size. The step size decreases at rate $\frac{1}{\sqrt{k}}$. Contrary to the worse theoretical guarantees which we have for PGD with decreasing step size for our objectives in~\ref{problem_6},\ref{problem_7} and~\ref{problem_8} we see much better results even when each internal optimization loop is ran for $200/500$ iterations. The best resuts were obtained with intial step-size $\alpha = 0.5$ and parameters for the smoothness and sparseness penalties $\eta = 0.01$ and $\0.01$. We have already discussed why these smoothness and sparseness parameters perform best. The overall objective decreased to $3.26$ and the sparsity of $\Theta$ was 13.
 \begin{figure}[H]
   \begin{subfigure}[b]{\textwidth}
     \includegraphics[width=\textwidth]{proj-gradient-dec-wellb.png}
@@ -502,7 +502,36 @@ We run the same experiments for decreasing step size as we did for fixed step si
     With the decreasing step size, we observe that the objectives of even our worst behaved functions are still much smother then in the fixed step size case.  We note that in the fixed step size case, that once $\alpha < 0.1$ for large $\lambda$ and $\eta$ most of the objectives became well behaved, and thus for the decreasing step size case, we have that even with $\alpha_0 = 0.5$, we are reaching these smaller values of $\alpha$ within 25 steps.
   }
 \end{figure}
+\begin{figure}[H]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{DEC_W.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{DEC_Th.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{DEC_H.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{DEC_Wlast.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{DEC_Thlast.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{DEC_Hlast.png}
+  \end{subfigure}
 
+  \caption{Plots of $W, H, \Theta$ optimized on the first and last 10 iterations of projected gradient decent (decreasing step size as $\frac{1}{\sqrt{k}}$ }
+  \label{DEC_WTH}
+\end{figure}
+From figure~\ref{DEC_WTH} we can see a couple of differences compared to the fixed step size case -- first the objective for $\H$ decreases a lot more and smoothly, secondly the objective for $\Theta$ stays almost the same and finally during the last $10$ calls to PGD with decreasing step size to solve problem~\ref{problem_6} the objective for $\W$ keeps restarting from the same place. We also notice that the objective for $\W$ decreases much quicker than for the fixed step size which suggests convergence rate faster than $\frac{1}{\sqrt{k}}$ which are the only guarantees we have from the theory we studied.
 
 
 \section{Simple Dual Averaging}
