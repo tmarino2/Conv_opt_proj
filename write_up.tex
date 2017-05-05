@@ -424,8 +424,7 @@ None of the convergence results in lecture slides 6 hold any longer for projecte
     \caption{Projected gradient on all of our 64 hyperparameter experiments for decreasing step size.}
   \end{subfigure}
   \caption{Experimental results from decreasing step sized for projected gradient decent running $\alpha \in \{0.001, 0.05, 0.1, 0.5\}, \eta \in \{ 0.01, 0.1, 0.5, 1, 10 \}, \lambda \in \{ 0.01, 0.1, 0.5, 1, 10\} $.
-    %
-    With the decreasing step size, we observe that the objectives of even our worst behaved
+    With the decreasing step size, we observe that the objectives of even our worst behaved functions are still much smother then in the fixed step size case.  We note that in the fixed step size case, that once $\alpha < 0.1$ for large $\lambda$ and $\eta$ most of the objectives became well behaved, and thus for the decreasing step size case, we have that even with $\alpha_0 = 0.5$, we are reaching these smaller values of $\alpha$ within 25 steps.
   }
 \end{figure}
 
@@ -856,6 +855,44 @@ or the book chapter we applied.
 \end{figure}
 \end{center}
 
+
+\section{OTHER STUFF MOVE THIS}
+
+
+\begin{figure}[H]
+  %\begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha.png}
+    \caption{Overall objective for changing the alpha between different suboptimization problems}
+  %\end{subfigure}
+\end{figure}
+  \begin{figure}[H]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-H-first.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-H-last.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-W-first.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-W-last.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-Th-first.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-Th-last.png}
+  \end{subfigure}
+
+  \caption{Plots of $W, H, \Theta$ optimized on the first and last 10 iterations of projected gradient decent with different values of $\alpha$ for each sub problem}
+  \end{figure}
 
 
 \bibliographystyle{plain}
