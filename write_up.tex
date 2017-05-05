@@ -338,36 +338,36 @@ exists an exact solution to this problem.}
   \label{PGD_overall}
 \end{figure}
 Next we are going to plot the internal objective values for several different runs of projected gradient descent for each of the problems which optimize over $\H$,$\Theta$ and $\W$ individually. We are going to restrict all our plots for the projected gradient descent section to the parameters which obtained the smallest overall objective on the experiments ran above. This is done since there are just too many combinations of parameters to plot for the number of different experiments we ran and there is no feasible way to choose meaningful results to present as most of the reasonable plots look very similar to each other. The detailed plots for $\H$,$\Theta$ and $\W$ can be found in figure~\ref{fig:PGD_detailed_fix}
-%% \begin{center}
-%%   \begin{figure}[H]
-%%     \centering
-%%   \begin{subfigure}[b]{0.3\textwidth}
-%%     \includegraphics[scale=0.12]{{pgd_fixed_W}.png}
-%%   \end{subfigure}
-%%   \centering
-%%   \begin{subfigure}[b]{0.3\textwidth}
-%%     \includegraphics[scale=0.12]{{pgd_fixed_Th}.png}
-%%   \end{subfigure}
-%%   \centering
-%%   \begin{subfigure}[b]{0.3\textwidth}
-%%     \includegraphics[scale=0.12]{{pgd_fixed_H}.png}
-%%   \end{subfigure}
-%%   \centering
-%%   \begin{subfigure}[b]{0.3\textwidth}
-%%     \includegraphics[scale=0.12]{{pgd_fixed_Wlast}.png}
-%%   \end{subfigure}
-%%   \centering
-%%   \begin{subfigure}[b]{0.3\textwidth}
-%%     \includegraphics[scale=0.12]{{pgd_fixed_Thlast}.png}
-%%   \end{subfigure}
-%%   \centering
-%%   \begin{subfigure}[b]{0.3\textwidth}
-%%     \includegraphics[scale=0.12]{{pgd_fixed_Hlast}.png}
-%%   \end{subfigure}
-%%   \caption{Detailed plots for each call to PGD with fixed step size for~\ref{problem_6},\ref{problem_7} and~\ref{problem_8}}
-%%   \label{fig:PGD_detailed_fix}
-%%   \end{figure}
-%% \end{center}
+\begin{center}
+  \begin{figure}[H]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{pgd_fixed_W}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{pgd_fixed_Th}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{pgd_fixed_H}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{pgd_fixed_Wlast}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{pgd_fixed_Thlast}.png}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.12]{{pgd_fixed_Hlast}.png}
+  \end{subfigure}
+  \caption{Detailed plots for each call to PGD with fixed step size for~\ref{problem_6},\ref{problem_7} and~\ref{problem_8}}
+  \label{fig:PGD_detailed_fix}
+  \end{figure}
+\end{center}
 We briefly comment on what is observed -- first the objective between each call to PGD never increases which is very unexpected. This basically implies that the overall objective is always decreasing with every step of the suboptimization procedures. Secondly the behavior of the objectives for $\W$ and $\Theta$ is somewhat expected as both first decrease rapidly and at the final calls almost don't change. The more surprising observation referencing back to our theory discussion is the convergence rate for $\Theta$. Since the objective is strongly convex we know that we should have linear convergence to a local neighbourhood of the optimal solution. The plots do not show this, in fact it seems that the objective for $\W$ converges quicker. Our final observation is that the objective for $\H$ does not change almost at all. We conjecture that this is dew to poor step size choice and that a step-size different step size choices for PGD applied to each of the 3 optimization sub-routines should fix the problem. Thus these are the next experiments we run. A final comment is that another interesting experiment to run would be to decrease the number of outer most loops of the alternating minimization procedure and increase the number innner loops for PGD for each problem so that the total number of iterations does not change and see if we observe the same overall objective. The next experiments we present something in between -- we multiply the step-size $\alpha$ by $10/100$ when doing PGD on the objective for $\H$ and $0.1/0.01$ for $\Theta$. We also increase the number of iterations to $1000$ and $5000$, however, the iterations of the outer most loop are kept to $200$.
 \begin{figure}[H]
   %\begin{subfigure}[b]{0.3\textwidth}
@@ -404,77 +404,77 @@ We briefly comment on what is observed -- first the objective between each call 
   \caption{Plots of $W, H, \Theta$ optimized on the first and last 10 iterations of projected gradient decent with different values of $\alpha$ for each sub problem}
   \end{figure}
   
-%% \begin{figure}[H]
-%%   %\begin{subfigure}[b]{0.3\textwidth}
-%%     \includegraphics[width=\textwidth]{PGD_vary_mult5000.png}
-%%     \caption{Overall objective for changing the alpha between different suboptimization problems (100 and 0.01)}
-%%   %\end{subfigure}
-%% \end{figure}
-%% \begin{figure}[H]
-%%     \centering
-%%   \begin{subfigure}[b]{0.3\textwidth}
-%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-H100.png}
-%%   \end{subfigure}
-%% \centering
-%%   \begin{subfigure}[b]{0.3\textwidth}
-%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-H100last.png}
-%%   \end{subfigure}
-%% \centering
-%%   \begin{subfigure}[b]{0.3\textwidth}
-%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-W100.png}
-%%   \end{subfigure}
-%% \centering
-%%   \begin{subfigure}[b]{0.3\textwidth}
-%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-W100last.png}
-%%   \end{subfigure}
-%% \centering
-%%   \begin{subfigure}[b]{0.3\textwidth}
-%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-Th100.png}
-%%   \end{subfigure}
-%% \centering
-%%   \begin{subfigure}[b]{0.3\textwidth}
-%%     \includegraphics[width=\textwidth]{fixed-step-change-alpha-Th100last.png}
-%%   \end{subfigure}
+\begin{figure}[H]
+  %\begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{PGD_vary_mult5000.png}
+    \caption{Overall objective for changing the alpha between different suboptimization problems (100 and 0.01)}
+  %\end{subfigure}
+\end{figure}
+\begin{figure}[H]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-H100.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-H100last.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-W100.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-W100last.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-Th100.png}
+  \end{subfigure}
+\centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{fixed-step-change-alpha-Th100last.png}
+  \end{subfigure}
 
-%%   \caption{Plots of $W, H, \Theta$ optimized on the first and last 10 iterations of projected gradient decent with different values of $\alpha$ for each sub problem}
-%% \end{figure}
-%% The lowest objective value for~\ref{problem_5} we get when running the $5000$ itertations per suboptimization problem with rescaling factors $10$ and $0.1$ is $2.31$ and with rescaling factors $100$ and $0.01$ is $1.985$. As we can see both the rescaling and not keeping step-size constant across optimization problems helps with improving the objective significantly. The sparsity for $\Theta$ was 16. We also ran the same experiment with $1000$ iterations per suboptimization problem and the best overall objective we founds for rescaling factors $10$ and $0.1$ was $55.49$ and for rescaling factors $100$ and $0.01$ was $8.7182$ with sparsity for $\Theta$ 17. We conclude that changing the step size significantly improves the quality of the best solution overall for the objective in~\ref{problem_5}. We also ran an experiment where we stopped each of the PGD algorithms after distance between consecutive iterates became smaller than $5*10^{-5}$. The best objective value we found was $54.8$ and the sparsity of $\Theta$ was 21.
+  \caption{Plots of $W, H, \Theta$ optimized on the first and last 10 iterations of projected gradient decent with different values of $\alpha$ for each sub problem}
+\end{figure}
+The lowest objective value for~\ref{problem_5} we get when running the $5000$ itertations per suboptimization problem with rescaling factors $10$ and $0.1$ is $2.31$ and with rescaling factors $100$ and $0.01$ is $1.985$. As we can see both the rescaling and not keeping step-size constant across optimization problems helps with improving the objective significantly. The sparsity for $\Theta$ was 16. We also ran the same experiment with $1000$ iterations per suboptimization problem and the best overall objective we founds for rescaling factors $10$ and $0.1$ was $55.49$ and for rescaling factors $100$ and $0.01$ was $8.7182$ with sparsity for $\Theta$ 17. We conclude that changing the step size significantly improves the quality of the best solution overall for the objective in~\ref{problem_5}. We also ran an experiment where we stopped each of the PGD algorithms after distance between consecutive iterates became smaller than $5*10^{-5}$. The best objective value we found was $54.8$ and the sparsity of $\Theta$ was 21.
 
-%% \begin{figure}
-%%   \includegraphics[width=\textwidth]{fixed-step-alpha.png}
-%%   \caption{Our objective varying $\alpha$}
-%% \end{figure}
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-alpha.png}
+  \caption{Our objective varying $\alpha$}
+\end{figure}
 
-%% \begin{figure}
-%%   \includegraphics[width=\textwidth]{fixed-step-lambda.png}
-%%   \caption{Our objective varying $\lambda$}
-%% \end{figure}
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-lambda.png}
+  \caption{Our objective varying $\lambda$}
+\end{figure}
 
-%% \begin{figure}
-%%   \includegraphics[width=\textwidth]{fixed-step-eta.png}
-%%   \caption{Our objective varying $\eta$}
-%% \end{figure}
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-eta.png}
+  \caption{Our objective varying $\eta$}
+\end{figure}
 
-%% \begin{figure}
-%%   \includegraphics[width=\textwidth]{fixed-step-internal-W.png}
-%%   \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $W$}
-%% \end{figure}
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-internal-W.png}
+  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $W$}
+\end{figure}
 
-%% \begin{figure}
-%%   \includegraphics[width=\textwidth]{fixed-step-internal-H.png}
-%%   \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $H$}
-%% \end{figure}
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-internal-H.png}
+  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $H$}
+\end{figure}
 
-%% k\begin{figure}
-%%   \includegraphics[width=\textwidth]{fixed-step-internal-Th.png}
-%%   \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $\theta$}
-%% \end{figure}
+k\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-internal-Th.png}
+  \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $\theta$}
+\end{figure}
 
 
-%% \begin{figure}
-%%   \includegraphics[width=\textwidth]{fixed-step-all.png}
-%%   \caption{All steps from alternating minimization problem concatenated together}
-%% \end{figure}
+\begin{figure}
+  \includegraphics[width=\textwidth]{fixed-step-all.png}
+  \caption{All steps from alternating minimization problem concatenated together}
+\end{figure}
 
 
 \subsection{Decreasing step size}
