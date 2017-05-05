@@ -313,8 +313,7 @@ Theorem 1.8 in lecture slides 4 now characterizes the linear convergence rate to
 
 
 \subsubsection{Fixed step size experiment results}
-\red{TODO: clean up}
-
+%
 \begin{figure}[h]
   \begin{subfigure}[b]{\textwidth}
     \includegraphics[width=\textwidth]{proj-gradient-fixed-wellb.png}
@@ -322,10 +321,21 @@ Theorem 1.8 in lecture slides 4 now characterizes the linear convergence rate to
   \end{subfigure}
   \begin{subfigure}[b]{\textwidth}
     \includegraphics[width=\textwidth]{proj-gradient-fixed-all.png}
-    \caption{Projected gradient on all of our 64 hyperparamteer experiments. (Or as we like to call it, modern art)}
+    \caption{Projected gradient on all of our 64 hyperparameter experiments. (Or as we like to call it, modern art)}
   \end{subfigure}
-  \caption{Experimental results from fixed step sized for projected gradient decent running $\alpha \in \{0.001, 0.05, 0.1, 0.5\}, \eta \in \{ 0.01, 0.1, 0.5, 1, 10 \}, \lambda \in \{ 0.01, 0.1, 0.5, 1, 10\} $}
+  \caption{Experimental results from fixed step sized for projected gradient decent running $\alpha \in \{0.001, 0.05, 0.1, 0.5\}, \eta \in \{ 0.01, 0.1, 0.5, 1, 10 \}, \lambda \in \{ 0.01, 0.1, 0.5, 1, 10\} $.
+    % maybe move this to after the figure???
+For our experiments with larger step sizes, we observe that the obective values
+are not stable when plotting on the range of $< 1000$.  However even looking on
+a large scale there still tend to be spikes with some of the methods when using
+larger $\eta, \lambda$ as well.  As with our experiments using other methods, we
+observe that we are able to find the lowest value of our objective when setting
+$\eta$ and $\lambda$ to small ($0.01$) values.  This is expected since these
+behave as reguralarization on the matrices which we are able to find.
+Additionally, we note again that for $\lambda = \eta = 0$ we kown that there
+exists an exact solution to this problem.}
 \end{figure}
+
 
 
 %% \begin{figure}
