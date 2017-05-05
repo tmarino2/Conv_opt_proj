@@ -126,96 +126,114 @@ def opt(X, n, m, r, L, eta, iters=2000, fhandle=None, fudge=0.01):
 
     W = maximum(np.random.randn(n, r), 0)
     H = maximum(np.random.randn(r, m), 0)
-    theta = maximum(np.random.randn(r), 0)#
+    theta = maximum(np.random.randn(r), 0)
     
-    mu_max = 100.
-    
+    mu_max = 1000.
+
     Mu_W = maximum(np.random.randn(n, r), 0) + fudge
-    Mu_H = maximum(np.random.randn(r, m), 0) + fudge
-    Mu_theta = maximum(np.random.randn(r), 0) + fudge
-    
     rho_W = ones_like(Mu_W)
+    Mu_H = maximum(np.random.randn(r, m), 0) + fudge
     rho_H = ones_like(Mu_H)
+    Mu_theta = maximum(np.random.randn(r), 0) + fudge
     rho_theta = ones_like(Mu_theta)
     
     for k in xrange(iters):
-
-        # STEP 1
         
         # iterate on W
-        params = W.reshape(-1)
-        def f(params):
-            W_new = np.resize(params, W.shape)
-            np.resize(params, W.shape)
-            return func(X, W_new, theta, H, L, eta, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
+        for i in xrange(50):
+            params = W.reshape(-1)
+            def f(params):
+                W_new = np.resize(params, W.shape)
+                np.resize(params, W.shape)
+                return func(X, W_new, theta, H, L, eta, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
             
-        def g(params):
-            W_new = np.resize(params, W.shape)
-            return np.resize(grad_W(X, W_new, theta, H, L, eta, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H), params.shape)
-
-        opt, _, _ = lbfgs(f, params, fprime=g, disp=0, maxiter=100)
-        W = opt.reshape(W.shape)
+            def g(params):
+                W_new = np.resize(params, W.shape)
+                return np.resize(grad_W(X, W_new, theta, H, L, eta, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H), params.shape)
         
+            opt, _, _ = lbfgs(f, params, fprime=g, disp=0, maxiter=10)
+            W = opt.reshape(W.shape)
+            Mu_W += rho_W * np.maximum(0, -W)
+            V_W = np.minimum(W, Mu_W/rho_W)
+            rho_W *= 1.01
+            Mu_W = np.minimum(Mu_W, mu_max)
+
+            string = "innerW {0} {1}: {2}".format(*(i, k, func_orig(X, W, theta, H, L, eta)))
+            print string
+            if fhandle is not None:
+                fhandle.write(string+"\n")
+
+        W = np.maximum(0, W)
+
+        string = "W {0}: {1}".format(*(k, func_orig(X, W, theta, H, L, eta)))
+        print string
+        if fhandle is not None:
+            fhandle.write(string+"\n")
+
+
         # iterate on H
-        params = H.reshape(-1)
-        def f(params):
-            H_new = np.resize(params, H.shape)
-            np.resize(params, H.shape)
-            return func(X, W, theta, H_new, L, eta, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
-            
-        def g(params):
-            H_new = np.resize(params, H.shape)
-            return np.resize(grad_H(X, W, theta, H_new, L, eta, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H), params.shape)
-
-        opt, _, _ = lbfgs(f, params, fprime=g, disp=0, maxiter=100)
-        H = opt.reshape(H.shape)
+        for i in xrange(50):
+            params = H.reshape(-1)
+            def f(params):
+                H_new = np.resize(params, H.shape)
+                np.resize(params, H.shape)
+                return func(X, W, theta, H_new, L, eta, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
         
+            def g(params):
+                H_new = np.resize(params, H.shape)
+                return np.resize(grad_H(X, W, theta, H_new, L, eta, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H), params.shape)
+
+            opt, _, _ = lbfgs(f, params, fprime=g, disp=0, maxiter=10)
+            H = opt.reshape(H.shape)
+            Mu_H += rho_H * np.maximum(0, -H)
+            V_H = np.minimum(H, Mu_H/rho_H)
+            rho_H *= 1.01
+            Mu_H = np.minimum(Mu_H, mu_max)
+
+            string = "innerH {0} {1}: {2}".format(*(i, k, func_orig(X, W, theta, H, L, eta)))
+            print string
+            if fhandle is not None:
+                fhandle.write(string+"\n")
+            
+        H = np.maximum(0, H)
+
+        string = "H {0}: {1}".format(*(k, func_orig(X, W, theta, H, L, eta)))
+        print string
+        if fhandle is not None:
+            fhandle.write(string+"\n")
+
         # iterate on theta
-        params = theta.reshape(-1)
-        def f(params):
-            theta_new = np.resize(params, theta.shape)
-            np.resize(params, theta.shape)
-            return func(X, W, theta_new, H, L, eta, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
+        for i in xrange(50):
+            params = theta.reshape(-1)
+            def f(params):
+                theta_new = np.resize(params, theta.shape)
+                np.resize(params, theta.shape)
+                return func(X, W, theta_new, H, L, eta, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H)
             
-        def g(params):
-            theta_new = np.resize(params, theta.shape)
-            return np.resize(grad_theta(X, W, theta_new, H, L, eta, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H), params.shape)
+            def g(params):
+                theta_new = np.resize(params, theta.shape)
+                return np.resize(grad_theta(X, W, theta_new, H, L, eta, Mu_W, Mu_theta, Mu_H, rho_W, rho_theta, rho_H), params.shape)
         
-        opt, _, _ = lbfgs(f, params, fprime=g, disp=0, maxiter=100)
-        theta = opt.reshape(theta.shape)
+            opt, _, _ = lbfgs(f, params, fprime=g, disp=0, maxiter=100)
+            theta = opt.reshape(theta.shape)
+        
+            Mu_theta += rho_theta * np.maximum(0, -theta)
+            V_theta = np.minimum(theta, Mu_theta/rho_theta)
+            rho_theta *= 1.01
+            Mu_theta = np.minimum(Mu_theta, mu_max)
 
-        string = "objective {0}: {1}".format(*(k, func_orig(X, W, theta, H, L, eta)))
+            string = "innertheta {0} {1}: {2}".format(*(i, k, func_orig(X, W, theta, H, L, eta)))
+            print string
+            if fhandle is not None:
+                fhandle.write(string+"\n")
+            
+        theta = np.maximum(0, theta)
+        
+        string = "theta {0}: {1}".format(*(k, func_orig(X, W, theta, H, L, eta)))
         print string
         if fhandle is not None:
             fhandle.write(string+"\n")
     
-        # STEP 2
-        Mu_W += rho_W * np.maximum(0, -W)
-        Mu_H += rho_H * np.maximum(0, -H)
-        Mu_theta += rho_theta * np.maximum(0, -theta)
-
-        # STEP 3
-        V_W = np.minimum(W, Mu_W/rho_W)
-        V_H = np.minimum(H, Mu_H/rho_H)
-        V_theta = np.minimum(theta, Mu_theta/rho_theta)
-
-        # condition missing (vacuous?)
-        rho_W *= 1.01
-        rho_H *= 1.01
-        rho_theta *= 1.01
-
-        # STEP 4
-        Mu_W = np.minimum(Mu_W, mu_max)
-        Mu_H = np.minimum(Mu_H, mu_max)
-        Mu_theta = np.minimum(Mu_theta, mu_max)
-
-        # print "Mu_W", Mu_W.min(), Mu_W.max()
-        # print "Mu_H", Mu_H.min(), Mu_H.max()
-        # print "Mu_theta", Mu_theta.min(), Mu_theta.max()
-
-        # print "W:", W.min(), W.max()
-        # print "H:", H.min(), H.max()
-        # print "theta:", theta.min(), theta.max()
 
 if __name__ == "__main__":
     import argparse
@@ -230,9 +248,6 @@ if __name__ == "__main__":
     X = M['X']
     n, m, r = X.shape[0], X.shape[1], 40
 
-    #n, m, r = 10, 20, 10
-    #X = maximum(np.random.randn(n, m), 0)
-    
     W = maximum(np.random.randn(n, r), 0)
     H = maximum(np.random.randn(r, m), 0)
     theta = maximum(np.random.randn(r), 0)
@@ -249,3 +264,6 @@ if __name__ == "__main__":
         f.write("eta={0}\n".format(eta))
         
         opt(X, n, m, r, L, eta, iters=5000, fhandle=f)
+
+    # TO RUN
+    # python opt.py --X ../data1.mat --log dump --L 0.01 --eta 0.01

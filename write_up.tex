@@ -209,7 +209,7 @@ and $\H_t$ to be the minimizer of
     \minimize{\H\in \mathbb{R}^{k\times n}}{\norm{\X - \W_{t}\H_{t-1}}_F^2}{\H_{i,j} \geq 0}.
   \end{aligned}
 \end{equation}
-Proceed to carry out this alternating minimization approach until some stopping criteria is met e.g.\\ $\norm{\W_t\H_t - \W_{t+1}\H_{t+1}}_F^2 < \epsilon$. In~\cite{tropp2003alternating} it is shown that this algorithm is going to have a fixed point. Note that~\ref{problem_2},\ref{problem_3} are now constraint convex-optimization problems so one can choose their favourite method to solve them.
+Proceed to carry out this alternating minimization approach until some stopping criteria is met e.g.\\ $\norm{\W_t\H_t - \W_{t+1}\H_{t+1}}_F^2 < \epsilon$. In~\cite{tropp2003alternating} it is shown that this algorithm is going to have a fixed point. Note that~\ref{problem_2},\ref{problem_3} are now constraint convex-optimization problems so one can choose their favorite method to solve them.
 \par
 Usually NMF is applied to real-world problems where the $\W$ and $\H$ term have some interpretation -- for example $\X$ can be the Fourier power spectogram of an audio signal where the $m,n$-th entry is the power of signal at time window $n$ and frequency bin $m$. The assumption is that the observed signal is coming from a mixture of $k$ static sound sources. Now each column of $\W$ can be interpreted as the average power spectrum of an audio source and each row of $\H$ can be interpreted as time-varying gain of a source. In practice the number of sources $k$ is not known and we would like to also infer it from the data. This can be done by introducing an additional factor in the optimization problem which indicates the weight of a source in the mixture.
 \begin{equation}\label{problem_4}
@@ -224,7 +224,6 @@ In problem~\ref{problem_4} $\Theta$ is introduced as the weight matrix for the m
   \end{aligned}
 \end{equation}
 \section{Algorithm}
-TODO: write down the gradients/subgradients of 6,7 and 8
 \par
 Problem~\ref{problem_5} is not a convex optimization problem, however, if one considers the 3 separate problems
 \begin{equation}\label{problem_6}
@@ -242,7 +241,8 @@ Problem~\ref{problem_5} is not a convex optimization problem, however, if one co
     \minimize{\H \in \mathbb{R}^{d\times n}}{\frac{1}{n}\norm{\X - \W\Theta\H}_F^2}{\H_{i,j}\geq 0}
   \end{aligned}
 \end{equation}
-each one is a convex optimization problem. What is more the objectives in~\ref{problem_6} and~\ref{problem_7} are smooth and each of the objectives is also strongly convex. The proposed algorithm is now to solve each of the convex optimization problems separately in an alternating fashion. Pseudo code is given in~\ref{alg:meta_nmf}.
+each one is a convex optimization problem. What is more the objectives in~\ref{problem_6} and~\ref{problem_8} are differentiable and~\ref{problem_7} is strongly convex assuming that $\H^\top \W$ is full rank. %\red{TODO check}
+The proposed algorithm is now to solve each of the convex optimization problems separately in an alternating fashion. Pseudo code is given in algorithm~\ref{alg:meta_nmf}.
 
 \begin{algorithm}[H]
   \caption{Alternating minimization meta algorithm for problem~\ref{problem_5}}
@@ -258,7 +258,7 @@ each one is a convex optimization problem. What is more the objectives in~\ref{p
   \end{algorithmic}
 \end{algorithm}
 
-The main focus of our project is now to solve each of the problems~\ref{problem_6},\ref{problem_7},\ref{problem_8} by using different algorithms explored in class, comparing our empirical observations with the derived convergence results. The algorithms we choose to compare are Projected Gradient/Subgradient Descent, Simple Dual Averaging and Augmented Lagrangian. For Projected Gradient/Subgradient Descent we both experiment with fixed step size and decreasing step size as $\frac{1}{t}$. We are also going to assume that all the minimizers of the above problems are in some compact set -- it is not hard to imagine that this holds true, for example consider minimizing the objective in~\ref{problem_6}. If we let $\norm{\W}_F$ go to infinity for fixed $\Theta,\H$ and $\X$ the objective is going to go to infinity and thus $\norm{\W}_F$ must be bounded so we can assume that there exists optimal $\W^*$ is in some bounded closed ball with respect to the Frobenius norm. Thus we can restrict our attention on solving the optimization problems on the intersection of closed set with a compact set i.e. a compact set. Thus we can assume the existence of at least one minimizer of each of the optimization problems~\ref{problem_6},\ref{problem_7} and~\ref{problem_8}
+The main focus of our project is now to solve each of the problems~\ref{problem_6},\ref{problem_7},\ref{problem_8} by using different algorithms explored in class, comparing our empirical observations with the derived convergence results. The algorithms we choose to compare are Projected Gradient/Subgradient Descent, Simple Dual Averaging and Augmented Lagrangian. For Projected Gradient/Subgradient Descent we both experiment with fixed step size and decreasing step size as $\frac{1}{t}$. We are also going to assume that all the minimizers of the above problems are in some compact set -- it is not hard to imagine that this holds true, for example consider minimizing the objective in~\ref{problem_6}. If we let $\norm{\W}_F$ go to infinity for fixed $\Theta,\H$ and $\X$ the objective is going to go to infinity and thus $\norm{\W}_F$ must be bounded so we can assume that there exists optimal $\W^*$ is in some bounded closed ball with respect to the Frobenius norm. Thus we can restrict our attention on solving the optimization problems on the intersection of closed set with a compact set i.e. a compact set. Thus we can assume the existence of at least one minimizer of each of the optimization problems~\ref{problem_6},\ref{problem_7} and~\ref{problem_8}.  A similar argument holds for $\Theta$ and $\H$.
 \subsection{Subgradients for problems~\ref{problem_6},\ref{problem_7},\ref{problem_8}}
 If $f$ denotes the respective objective of problems~\ref{problem_6},\ref{problem_7} and~\ref{problem_8} then gradients and an element of the subdifferential of~\ref{problem_7} is given by
 \begin{equation}
@@ -279,15 +279,15 @@ If $f$ denotes the respective objective of problems~\ref{problem_6},\ref{problem
 \begin{equation}
   \label{subgrad_7}
   \begin{aligned}
-    \left(\frac{2}{n}\W^\top\left(\W\Theta\H-\X\right)\H +\lambda\text{sgn}\left(\Theta \right)\right)\odot\I \in \partial f(\Theta)
+    \partial f(\Theta) \ni \left(\frac{2}{n}\W^\top\left(\W\Theta\H-\X\right)\H +\lambda\text{sign}\left(\Theta \right)\right)\odot\I
   \end{aligned}
 \end{equation}
-where $\odot$ denotes the Hadamard product and ``sgn'' is the sign function applied element wise to $\Theta$. The derivation in~\ref{subgrad_7} holds because $\Theta$ is always constraint to be a diagonal matrix.
+where $\odot$ denotes the Hadamard product and ``sign'' is the sign function applied element wise to $\Theta$. The derivation in~\ref{subgrad_7} holds because $\Theta$ is always constraint to be a diagonal matrix.
 \section{Projected Gradient Descent}
 \subsection{Fixed step size}
-TODO: include experiments and comment on comparison with the theory
+\red{TODO: include experiments and comment on comparison with the theory}
 \par
-For this part of the project a modified version of \textbf{Algorithm 1} from lecture slides $4$ is used with different choices of fixed step size $\alpha_k$. The difference with the algorithm given in lecture 4 is the stopping criteria -- as already discussed in class checking if the norm of the gradient is close to $0$ will not work well for objectives including $l_1$ penalty term, instead we choose to stop our procedure either after a fixed number of steps (in our experiments this is 200 when solving problems~\ref{problem_6} and \ref{problem_7} and 500 when solving problem~\ref{problem_8}) or if the distance between consecutive iterates becomes less than $\epsilon$ (where $\epsilon$ was set to be in the range $[10^{-4},10^{-5}]$). As discussed in class this is usually not a good stopping criteria unless the objective is differentiable with $L$-Lipschitz continuous derivatives. Luckily both the objectives in~\ref{problem_6} and~\ref{problem_8} are differentiable with Lipschitz continuous gradients which we show now.
+For this part of the project a modified version of \textbf{Algorithm 1} from lecture slides $4$ is used with different choices of fixed step size $\alpha_k$. The difference with the algorithm given in lecture 4 is the stopping criteria -- as already discussed in class checking if the norm of the gradient is close to $0$ will not work well for objectives including $l_1$ penalty term, instead we choose to stop our procedure either after a fixed number of steps (in our experiments this is 200 when solving problems~\ref{problem_6} and \ref{problem_7} and 500 when solving problem~\ref{problem_8}) or if the distance between consecutive iterates becomes less than $\epsilon$ (where $\epsilon \in [10^{-4},10^{-5}]$). As discussed in class this is usually not a good stopping criteria unless the objective is differentiable with $L$-Lipschitz continuous derivatives. Luckily both the objectives in~\ref{problem_6} and~\ref{problem_8} are differentiable with Lipschitz continuous gradients which we show now.
 \begin{lemma}\label{lem:lipsch_w}
   The objective in problem~\ref{problem_6} is differentiable with $L$-Lipschitz continuous gradients.
 \end{lemma}
@@ -300,7 +300,7 @@ For this part of the project a modified version of \textbf{Algorithm 1} from lec
   \end{equation}
   where we used triangle inequality and bounded each of the $\norm{(\W_1)_{i,1:j} - (\W_2)_{i,1:j}}_F \leq \norm{\W_1 - \W_2}_F$.
 \end{proof}
-The above lemma shows that the Lipschitz constant for the objective can indeed be very large as it depends on the product $\Theta\H$, however, in practice setting fixed step size $\alpha \leq 0.05$ seems to be in the range $(0,\frac{2}{L})$ which is when convergence for the algorithm is guaranteed. Sadly we can not guarantee strong convexity or strict convexity for the objectives in~\ref{problem_6} and~\ref{problem_8} so the theorem which charaterizes the best convergence rate is Theorem 1.9 in lecture slides 6. From our experiments we observe that our initial points $\W_0$ and $\H_0$ are roughly in the order of $10^3$ and $10^5$ from what we consider an optimal point and with $\alpha\sim 0.005$ we should have convergence roughly as $|f(\W_k) - f^*| \leq \frac{10^3}{0.005*k}$ and $|f(\H_k) - f^*| \leq \frac{10^5}{0.005*k}$. Here $f$ denotes the respective objective function and $f^*$ denotes the optimum objective value.
+The above lemma shows that the Lipschitz constant for the objective can indeed be very large as it depends on the product $\Theta\H$, however, in practice setting fixed step size $\alpha \leq 0.05$ seems to be in the range $(0,\frac{2}{L})$ which is when convergence for the algorithm is guaranteed. Sadly we can not guarantee strong convexity or strict convexity for the objectives in~\ref{problem_6} and~\ref{problem_8} so the theorem which characterizes the best convergence rate is Theorem 1.9 in lecture slides 6. From our experiments we observe that our initial points $\W_0$ and $\H_0$ are roughly in the order of $10^3$ and $10^5$ from what we consider an optimal point and with $\alpha\sim 0.005$ we should have convergence roughly as $|f(\W_k) - f^*| \leq \frac{10^3}{0.005*k}$ and $|f(\H_k) - f^*| \leq \frac{10^5}{0.005*k}$. Here $f$ denotes the respective objective function and $f^*$ denotes the optimum objective value.
 \par
 Surprisingly we can get linear convergence for~\ref{problem_7} under mild assumptions that the matrix $\H^\top \W$ is full rank. Such a rate will follow from showing the next lemma.
 \begin{lemma}
@@ -309,15 +309,75 @@ Surprisingly we can get linear convergence for~\ref{problem_7} under mild assump
 \begin{proof}
 To show the objective in~\ref{problem_7} is strongly convex we are going to show equivalently that $\frac{1}{n}\norm{\W\Theta\H}_F^2$ is strongly convex under the given assumption. To do this we are going to use a second order condition for strong convexity i.e. the fact that the Hessian of the above function should be a positive definite form. Since the Hessian of $\frac{1}{n}\norm{\W\Theta\H}_F^2$ is an order $4$ tensor and we would not like to compute it we are going to use a little trick and vectorize $\W\Theta\H$. Let $vec(\A)$ denote the vectorization of a matrix $\A$ by stacking its columns on top of each other. We use a famous equality $vec\left(\W\Theta\H\right) = \left(\H^\top\otimes\W\right)vec(\Theta)$ where $\otimes$ denotes the Kronecker product. If we denote $\A = \H^\top\otimes\W$ and $\x = vec(\Theta)$ then $\frac{1}{n}\norm{\W\Theta\H}_F^2 = \frac{1}{n}\norm{\A\x}_2^2$. The Hessian of $\frac{1}{n}\norm{\A\x}_2^2$ equals $\frac{2}{n}\A^\top\A$. Now the strong convexity parameter of $\frac{1}{n}\norm{\A\x}_2^2$ is characterized by the smallest singular value of the of $\A^\top\A$ which equals the smallest singular value squared of $\A=\H^\top\otimes\W$. From theorem 13.12 in~\cite{laub2005matrix} we know that the smallest singular value of $\H^\top\otimes\W$ is given by $\sigma_{min}(\H)\sigma_{min}(\W)$ which concludes the proof.
 \end{proof}
-Theorem 1.8 in lecture slides 4 now characterizes the linear convergence rate to a local neighbourhood of the solution. To address our choice of stopping criteria, from Theorem 1.8 we know that  $d(\Theta_{k+1},\Theta^*)^2 < \alpha\frac{\kappa_g^2}{\gamma} + c^kd(\Theta_0,\Theta^*)^2$, where $\Theta^*$ is the optimal solution to~\ref{problem_7}, $c<1$ depends on $\alpha$ and $\gamma$ and $\kappa_g$ is a bound on the norm of the elements in the sub-differential of the objective. For $k$ large enough this implies that all of the $\Theta_{k}$'s are going to be contained in an open ball of fixed radius which is approximately $c^kd(\Theta_0,\Theta^*)^2$ -- this implies that the distance between any two consecutive iterates $d(\Theta_k,\Theta_{k+1})^2$ is also going to be less than $\alpha\frac{\kappa_g^2}{\gamma}$. Since the convergence theory does not guarantee anything more stopping our algorithm when $d(\Theta_k,\Theta_{k+1})^2$ becomes small enough seems acceptable. To be absolutely fair $d(\Theta_k,\Theta_{k+1})^2$ being small is only a necessary condition for convergence but not sufficient -- it might happen that two consecutive iterates are close to each other, however, they are still not close to the optimal $\Theta^*$. To alleviate this problem one might check that all the pair-wise distances between $\Theta_k,\Theta_{k+1},...,\Theta_{k+\tau}$ are small.
+Theorem 1.8 in lecture slides 4 now characterizes the linear convergence rate to a local neighborhood of the solution. To address our choice of stopping criteria, from Theorem 1.8 we know that  $d(\Theta_{k+1},\Theta^*)^2 < \alpha\frac{\kappa_g^2}{\gamma} + c^kd(\Theta_0,\Theta^*)^2$, where $\Theta^*$ is the optimal solution to~\ref{problem_7}, $c<1$ depends on $\alpha$ and $\gamma$ and $\kappa_g$ is a bound on the norm of the elements in the sub-differential of the objective. For $k$ large enough this implies that all of the $\Theta_{k}$'s are going to be contained in an open ball of fixed radius which is approximately $c^kd(\Theta_0,\Theta^*)^2$ -- this implies that the distance between any two consecutive iterates $d(\Theta_k,\Theta_{k+1})^2$ is also going to be less than $\alpha\frac{\kappa_g^2}{\gamma}$. Since the convergence theory does not guarantee anything more, stopping our algorithm when $d(\Theta_k,\Theta_{k+1})^2$ becomes small enough seems acceptable. To be absolutely fair $d(\Theta_k,\Theta_{k+1})^2$ being small is only a necessary condition for convergence but not sufficient -- it might happen that two consecutive iterates are close to each other, however, they are still not close to the optimal $\Theta^*$. To alleviate this problem one might check that all the pair-wise distances between $\Theta_k,\Theta_{k+1},...,\Theta_{k+\tau}$ are small.
+
 
 \subsubsection{Fixed step size experiment results}
-\red{TODO: clean up}
+%
+\begin{figure}[h]
+  \begin{subfigure}[b]{\textwidth}
+    \includegraphics[width=\textwidth]{proj-gradient-fixed-wellb.png}
+    \caption{Projected gradient on experiments with well behaved results}
+  \end{subfigure}
+  \begin{subfigure}[b]{\textwidth}
+    \includegraphics[width=\textwidth]{proj-gradient-fixed-all.png}
+    \caption{Projected gradient on all of our 64 hyperparameter experiments. (Or as we like to call it, modern art)}
+  \end{subfigure}
+  \caption{Experimental results from fixed step sized for projected gradient decent running $\alpha \in \{0.001, 0.05, 0.1, 0.5\}, \eta \in \{ 0.01, 0.1, 0.5, 1, 10 \}, \lambda \in \{ 0.01, 0.1, 0.5, 1, 10\} $.
+    % maybe move this to after the figure???
+For our experiments with larger step sizes, we observe that the obective values
+are not stable when plotting on the range of $< 1000$.  However even looking on
+a large scale there still tend to be spikes with some of the methods when using
+larger $\eta, \lambda$ as well.  As with our experiments using other methods, we
+observe that we are able to find the lowest value of our objective when setting
+$\eta$ and $\lambda$ to small ($0.01$) values.  This is expected since these
+behave as reguralarization on the matrices which we are able to find.
+Additionally, we note again that for $\lambda = \eta = 0$ we kown that there
+exists an exact solution to this problem.}
+\end{figure}
+
+
+
+%% \begin{figure}
+%%   \includegraphics[width=\textwidth]{fixed-step-alpha.png}
+%%   \caption{Our objective varying $\alpha$}
+%% \end{figure}
+
+%% \begin{figure}
+%%   \includegraphics[width=\textwidth]{fixed-step-lambda.png}
+%%   \caption{Our objective varying $\lambda$}
+%% \end{figure}
+
+%% \begin{figure}
+%%   \includegraphics[width=\textwidth]{fixed-step-eta.png}
+%%   \caption{Our objective varying $\eta$}
+%% \end{figure}
+
+%% \begin{figure}
+%%   \includegraphics[width=\textwidth]{fixed-step-internal-W.png}
+%%   \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $W$}
+%% \end{figure}
+
+%% \begin{figure}
+%%   \includegraphics[width=\textwidth]{fixed-step-internal-H.png}
+%%   \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $H$}
+%% \end{figure}
+
+%% k\begin{figure}
+%%   \includegraphics[width=\textwidth]{fixed-step-internal-Th.png}
+%%   \caption{Every 10\textsuperscript{th} of our convex internal problem optimizing $\theta$}
+%% \end{figure}
+
+
+%% \begin{figure}
+%%   \includegraphics[width=\textwidth]{fixed-step-all.png}
+%%   \caption{All steps from alternating minimization problem concatenated together}
+%% \end{figure}
 
 
 \subsection{Decreasing step size}
-None of the convergence results in lecture slides 6 hold any longer for projected subgradient descent with decreasing step size. However, we can still characterize the convergence in terms of objective and iterates for step size decreasing as $\frac{1}{t}$. From Theorem 1.11 in lecture slides 4 we know that the iterates for projected gradient descent for problems~\ref{problem_6},\ref{problem_7} and \ref{problem_8} will converge to an optimal point (given such exists). For~\ref{problem_6} and~\ref{problem_8} we can use Lemma 1.3 in lecture slides 6 to show that this would imply convergence in objective. From Lemma 1.3 in lecture slides 6 we know that if $f$ has an L-Lipschitz continuous gradient we have $f(x_k) - f(x^*) \leq \langle\nabla f(x^*)(x_k-x^*)\rangle + \frac{L}{2}\norm{x_k-x^*}^2$. Using Cauchy-Schwartz inequality we have $\langle\nabla f(x^*)(x_k-x^*)\rangle \leq \norm{\nabla f(x^*)}\norm{x_k-x^*}$ thus $f(x_k) - f(x^*) \leq \norm{x_k-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right)$ and since $\norm{\nabla f(x^*)}$ is bounded this shows convergence in objective. By triangle inequality we have $\norm{x_k-x^*} \leq \norm{x_k-x_{k+1}} + \norm{x_{k+1} - x^*}$ and thus $f(x_k) - f(x^*) \leq \norm{x_k-x_{k+1}}(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}) + \norm{x_{k+1}-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right) \leq \norm{x_k-x_{k+1}}c_1 + \tilde{\epsilon}$ where $c_1 = \norm{\nabla f(x^*)}  + \frac{L}{2}\norm{x_k-x^*}$ and $\tilde{\epsilon} = \norm{x_{k+1}-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right)$. Clearly for $k$ large enough $\tilde{\epsilon}$ is as small as we would like and $c_1$ is bounded thus for $k$ large enough $\norm{x_{k+1} - x_k} < \epsilon$ implies $f(x_k) - f(x^*)$ is small. This should somewhat justify our stopping criteria for~\ref{problem_6} and~\ref{problem_8}. None of the above derivations, however, hold for~\ref{problem_7} in fact the only thing we can argue is that the iterates $\Theta_k$ are going to converge to $\Theta^*$. This is quite disappointing compared to the results we were able to obtain for a constant step size. In practice as we can see from the experiments we still get satisfactory results.
-TODO:Include experiments and comment in same way as in previous section
+None of the convergence results in lecture slides 6 hold any longer for projected subgradient descent with decreasing step size. However, we can still characterize the convergence in terms of objective and iterates for step size decreasing as $\frac{1}{t}$. From Theorem 1.11 in lecture slides 4 we know that the iterates for projected gradient descent for problems~\ref{problem_6},\ref{problem_7} and \ref{problem_8} will converge to an optimal point (given such exists). For~\ref{problem_6} and~\ref{problem_8} we can use Lemma 1.3 in lecture slides 6 to show that this would imply convergence in objective. From Lemma 1.3 in lecture slides 6 we know that if $f$ has an L-Lipschitz continuous gradient we have $f(x_k) - f(x^*) \leq \langle\nabla f(x^*)(x_k-x^*)\rangle + \frac{L}{2}\norm{x_k-x^*}^2$. Using Cauchy-Schwartz inequality we have $\nabla f(x^*)^\top (x_k-x^*) \leq \norm{\nabla f(x^*)}\norm{x_k-x^*}$ thus $f(x_k) - f(x^*) \leq \norm{x_k-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right)$ and since $\norm{\nabla f(x^*)}$ is bounded this shows convergence in objective. By triangle inequality we have $\norm{x_k-x^*} \leq \norm{x_k-x_{k+1}} + \norm{x_{k+1} - x^*}$ and thus $f(x_k) - f(x^*) \leq \norm{x_k-x_{k+1}}(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}) + \norm{x_{k+1}-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right) \leq \norm{x_k-x_{k+1}}c_1 + \tilde{\epsilon}$ where $c_1 = \norm{\nabla f(x^*)}  + \frac{L}{2}\norm{x_k-x^*}$ and $\tilde{\epsilon} = \norm{x_{k+1}-x^*}\left(\norm{\nabla f(x^*)} + \frac{L}{2}\norm{x_k-x^*}\right)$. Clearly for $k$ large enough $\tilde{\epsilon}$ is as small as we would like and $c_1$ is bounded thus for $k$ large enough $\norm{x_{k+1} - x_k} < \epsilon$ implies $f(x_k) - f(x^*)$ is small. This should somewhat justify our stopping criteria for~\ref{problem_6} and~\ref{problem_8}. None of the above derivations, however, hold for~\ref{problem_7} in fact the only thing we can argue is that the iterates $\Theta_k$ are going to converge to $\Theta^*$. This is quite disappointing compared to the results we were able to obtain for a constant step size. In practice as we can see from the experiments we still get satisfactory results.
+\red{TODO:Include experiments and comment in same way as in previous section}
 
 \subsubsection{Decreasing step size experiment results}
 
@@ -329,16 +389,16 @@ In this section we compare the SDA given in lecture slides 4 as \textbf{Algorith
 \subsection{Algorithm and implementation}
 Lower case bold letters denote matrices (contrary to standard convention) and the norm is the Frobenius norm together with the associated standrard inner product for matrices. We follow the pseudo-code given in \textbf{Algorithm 3} in the lecture slides as already stated. The most interesting part of the algorithm is implementing the update $\x_{k+1} \leftarrow \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}\rangle + \frac{\beta_{k+1}}{2}\norm{\x - \x_0}^2$ for problems~\ref{problem_6},\ref{problem_7} and~\ref{problem_8}. The following lemma shows us that this is equivalent to the projection of $x_0 - \frac{1}{\beta_{k+1}}\s_{k+1}$ onto the convex set $\mathcal{X}$.
 \begin{lemma}
-  Solving $\text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}\rangle + \frac{\beta_{k+1}}{2}\norm{\x - \x_0}^2$ is equivalent to solving $\text{arg}\min_{\x\in\mathcal{X}}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2$
+  Solving $\text{\normalfont argmin}_{\x\in\mathcal{X}} \langle \x,\s_{k+1}\rangle + \frac{\beta_{k+1}}{2}\norm{\x - \x_0}^2$ is equivalent to solving $\text{\normalfont argmin}_{\x\in\mathcal{X}}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2$
 \end{lemma}
 \begin{proof}
   \begin{equation}
     \begin{aligned}
-      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}\rangle + \frac{\beta_{k+1}}{2}\norm{\x - \x_0}^2 =\\
-      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1} - \beta_{k+1}\x_0\rangle + \frac{\beta_{k+1}}{2}\norm{\x}^2 =\\
-      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}- \beta_{k+1}\x_0\rangle + \frac{\beta_{k+1}}{2}\norm{\x }^2 + \frac{1}{2\beta_{k+1}}\norm{\s_{k+1} - \beta_{k+1}\x_0}^2 =\\
-      \text{arg}\min_{\x\in\mathcal{X}}\frac{\beta_{k+1}}{2}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2 =\\
-      \text{arg}\min_{\x\in\mathcal{X}}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2
+      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}\rangle + \frac{\beta_{k+1}}{2}\norm{\x - \x_0}^2 = &\\
+      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1} - \beta_{k+1}\x_0\rangle + \frac{\beta_{k+1}}{2}\norm{\x}^2 = &\\
+      \text{arg}\min_{\x\in\mathcal{X}} \langle \x,\s_{k+1}- \beta_{k+1}\x_0\rangle + \frac{\beta_{k+1}}{2}\norm{\x }^2 + \frac{1}{2\beta_{k+1}}\norm{\s_{k+1} - \beta_{k+1}\x_0}^2 = &\\
+      \text{arg}\min_{\x\in\mathcal{X}}\frac{\beta_{k+1}}{2}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2 = &\\
+      \text{arg}\min_{\x\in\mathcal{X}}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2 \;\;\;\; &
     \end{aligned}
   \end{equation}
 \end{proof}
@@ -347,8 +407,8 @@ For the set $\mathcal{X} := \{\x_{i,j} \geq 0\}$ it is easy to verify that the s
   \mathcal{P}(\x)_{i,j} = \begin{cases}
     \x_{i,j} & \x_{i,j} \geq 0\\
     0 &\text{otherwise}
-    \end{cases}
-\end{equation*}.
+    \end{cases}.
+\end{equation*}
 A simple way to see this is to form the Lagrangian $\mathcal{L}(\x,\y)$ for $\min_{\x\in\mathcal{X}}\frac{1}{2}\norm{\x - (\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1})}^2$ and notice that the pair $(\mathcal{P}(\x_0 - \frac{1}{\beta_{k+1}}\s_{k+1}),\y^*)$ satisfies KKT conditions. Here $\y^*$ is given by
 \begin{equation*}
   \y^*_{i,j} = \begin{cases}
@@ -551,6 +611,206 @@ To conclude this section -- we did not observe anything unexpected considering t
 \end{center}
 
 \section{Augmented Lagrangian}
+
+
+\section{Augmented Lagrangian}
+
+The final method we consider is augmented Lagrangian. First, we take the Lagrangian
+of our objective
+\begin{equation}
+  \begin{aligned}
+  {\cal L}\left(W, \Theta, H\right) = ||X - W\Theta H||_F^2 + \lambda ||\Theta||_1 + \eta\sum_{i,j}\left(\W_{i,j} - \W_{i+1,j}\right)^2 - \sum_{i=1}^m \sum_{j=1}^m \mu_{ij} W_{ij} - \sum_{i=1}^m \sum_{j=1}^n \nu_{ij} H_{ij} - \sum_{i=1}^n \xi \Theta_{ii}.
+  \end{aligned}
+\end{equation}
+
+The augmented Lagrangian, in contrast, considers the following objective
+\begin{equation}
+  \begin{aligned}
+    {\cal L}_{\textit{aug}}\left(W, \Theta, H\right) = ||X - W\Theta H||_F^2 + \lambda ||\Theta||_1 + \eta\sum_{i,j}\left(\W_{i,j} - \W_{i+1,j}\right)^2 - \sum_{i=1}^m \sum_{j=1}^m \max\left(0, -W_{ij} + \frac{\mu_{ij}}{\rho}\right)^2 \\
+    - \sum_{i=1}^m \sum_{j=1}^n \max\left(0, -H_{ij} + \frac{\nu_{ij}}{\rho} \right)^2 - \sum_{i=1}^n \max\left(0, \Theta_{ii} - \frac{\xi}{\rho}\right)^2.
+  \end{aligned}
+\end{equation}
+We then proceed to optimize ${\cal L}_{\textit{aug}}$ with
+respect to each of the parameters $W, \Theta, H$ separately. We note
+that the objective is not {\em jointly} convex in all three, but convex in
+each individual subproblem. We employ the algorithm discussed in Chapter 4
+of Birgin (2014) \cite{birgin2014practical}.
+
+\begin{algorithm}[H]
+  \caption{Alternating minimization Augmented Lagrangian algorithm for problem~\ref{problem_5}}
+  \label{alg:meta_nmf}
+  \begin{algorithmic}
+    \REQUIRE $\X,\W_0,\H_0,\Theta_0,\epsilon$
+    \ENSURE $\W_T,\H_T,\Theta_T$
+    \STATE $k \gets 0$
+    \WHILE{$\norm{\W_{t-1}\H_{t-1}\Theta_{t-1} - \W_t\H_t\Theta_t}_F^2>\epsilon$}
+    %% \STATE {\em STEP 1: Unconstrained Minimization}
+    \FOR{$k = 1,\ldots,K$}
+      \STATE{$W_{t+1} := \underset{{W \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W\Theta_t\H_t}_F^2 + \eta\sum_{i,j}\left(\W_{i,j} - \W_{i+1,j}\right)^2 + \sum_{i,j} \max\left(0, -W_{ij} + \frac{\mu^k_{ij}}{\rho^k}\right)^2}$}
+      \STATE $\mu_{ij} ^{k+1} \gets \left[\mu_{ij}^k - \rho_k W_{ij}\right]_{+}$, $\forall i, j$
+      \STATE $V_{ij}^{\mu^k} = \min\left\{ W_{ij}, \mu_{ij}^k / \rho^k\right\}$, $\forall i, j$
+      \STATE $\mu_{ij}^{k+1} = \Pi_{\mu^k_{ij}}\left([0, \mu_{\text{max}}] \right)$, $\forall i, j$
+    \ENDFOR
+    \STATE{$W_{t+1} = \mathbf{Proj}_{\ge 0}(W_{t+1})$}
+
+    \FOR{$k = 1,\ldots,K$}
+      \STATE{$H_{t+1} := \underset{{H \in \mathbb{R}^{d \times n}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W_{t+1}\Theta_t\H}_F^2 + \sum_{i,j} \max\left(0, -H_{ij} + \frac{\eta_{ij}}{\rho^k}\right)^2}$}
+      \STATE $\eta_{ij}^{k+1} \gets \left[\eta_{ij}^k - \rho_k H_{ij}\right]_{+}$, $\forall i, j$
+      \STATE $V_{ij}^{\nu^k} = \min\left\{ H_{ij}, \nu_{ij}^k / \rho^k\right\}$, $\forall i, j$
+      \STATE $V_{i}^{\xi^k} = \min\left\{ \Theta_{ii}, \xi_{ii}^k / \rho^k\right\}$, $\forall i, j$
+    \ENDFOR
+    \STATE{$H_{t+1} = \mathbf{Proj}_{\ge 0}(H_{t+1})$}
+
+
+    \FOR{$k = 1,\ldots,K$}
+      \STATE{$\Theta_{t+1} := \underset{{\Theta \in \mathbb{R}^{d \times d}}}{\text{argmin}} {\frac{1}{n}\norm{\X - \W_{t+1}\Theta\H_{t+1}}_F^2 + \lambda ||\Theta||_1  + \sum_{i} \max\left(0, -\Theta_{ii} + \frac{\xi^{k}_{i}}{\rho^k}\right)^2}$}
+      \STATE $\xi_{i}^{k+1} \gets \left[xi_{i}^k - \rho_k \Theta_{ii}\right]_{+}$, $\forall i$
+      \STATE $\nu_{ij}^{k+1} = \Pi_{\nu^k_{ij}}\left([0, \nu_{\text{max}}] \right)$, $\forall i, j$
+      \STATE $\xi_{i}^{k+1} = \Pi_{\xi^k_{i}}\left([0, \xi_{\text{max}}] \right)$, $\forall i$
+    \ENDFOR
+    \STATE{$\Theta_{t+1} = \mathbf{Proj}_{\ge 0}(\Theta_{t+1})$}
+
+
+    %% \STATE {\em STEP 2: Compute new approximation to the multipliers}
+    %% \STATE {\em STEP 3:}
+    %% \STATE $\rho^{k+1} \gets \gamma \rho^k$
+    %% \STATE {\em STEP 4: Project onto interval}
+    %% \STATE $k \gets k + 1$
+  \ENDWHILE
+  \end{algorithmic}
+  \label{alg:augmented-lagrangian}
+\end{algorithm}
+
+We perform the unconstrained optimization in
+Algorithm~\ref{alg:augmented-lagrangian} with L-BFGS
+\cite{liu1989limited}, using the standard SciPy implementation. We set $\mu_\text{max}, \nu_\text{max}, \xi_\text{max}$ to 100. To
+handle the $L_1$ penalty of $\Theta$, we use the projected L-BFGS
+method described in Schmidt 2009 \cite{schmidt2009optimization}.  We chose
+L-BFGS because it was best available blackbox (assuming to access to a
+gradient) in SciPy. Each internal iteration of L-BFGS was run to convergence,
+which is described great detail at \url{https://docs.scipy.org/doc/scipy-0.19.0/reference/generated/scipy.optimize.fmin_l_bfgs_b.html}.
+
+\subsection{Theory}
+Our augmented Lagrangian method differs from the one presented in
+class due to the presence of the {\em inequality}
+constraints. However, the general idea is the same. By Theorem 4.1 in
+Birgin (2014) \cite{birgin2014practical}, we are guaranteed that the algorithm
+generates as a convergence sequence, assuming a compact
+feasible set. Convergence rates for augmented Lagrangian were not discussed in either the class slides
+or the book chapter we applied.
+
+
+\subsection{Experiments}
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{augmented-lagrangian/plots/objective.pdf}
+  \caption{Our objective varying with different $\lambda$ and $\eta$ values.}
+\end{figure}
+
+\begin{center}
+  \begin{figure}[h]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=0.01,eta0.01}.pdf}
+    \caption{$\lambda=0.01,\eta=0.01$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=0.01,eta1.0}.pdf}
+    \caption{$\lambda=0.01,\eta=1.0$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=0.5,eta0.1}.pdf}
+    \caption{$\lambda=0.5 \eta=0.1$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=1.0,eta0.01}.pdf}
+    \caption{$\lambda=1.0 \eta=0.01$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=1.0,eta0.5}.pdf}
+        \caption{$\lambda=1.0 \eta=0.5$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/W:lambda=1.0,eta1.0}.pdf}
+    \caption{$\lambda=1.0 \eta=1.0$}
+  \end{subfigure}
+\end{figure}
+\end{center}
+
+\begin{center}
+  \begin{figure}[h]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=0.01,eta0.01}.pdf}
+    \caption{$\lambda=0.01,\eta=0.01$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=0.01,eta1.0}.pdf}
+    \caption{$\lambda=0.01,\eta=1.0$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=0.5,eta0.1}.pdf}
+    \caption{$\lambda=0.5 \eta=0.1$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=1.0,eta0.01}.pdf}
+    \caption{$\lambda=1.0 \eta=0.01$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=1.0,eta0.5}.pdf}
+        \caption{$\lambda=1.0 \eta=0.5$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/H:lambda=1.0,eta1.0}.pdf}
+    \caption{$\lambda=1.0 \eta=1.0$}
+  \end{subfigure}
+\end{figure}
+\end{center}
+
+\begin{center}
+  \begin{figure}[h]
+    \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=0.01,eta0.01}.pdf}
+    \caption{$\lambda=0.01,\eta=0.01$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=0.01,eta1.0}.pdf}
+    \caption{$\lambda=0.01,\eta=1.0$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=0.5,eta0.1}.pdf}
+    \caption{$\lambda=0.5 \eta=0.1$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=1.0,eta0.01}.pdf}
+    \caption{$\lambda=1.0 \eta=0.01$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=1.0,eta0.5}.pdf}
+        \caption{$\lambda=1.0 \eta=0.5$}
+  \end{subfigure}
+  \centering
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[scale=0.1]{{augmented-lagrangian/plots/theta:lambda=1.0,eta1.0}.pdf}
+    \caption{$\lambda=1.0 \eta=1.0$}
+  \end{subfigure}
+\end{figure}
+\end{center}
 
 
 
